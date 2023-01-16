@@ -1,0 +1,94 @@
+body {
+	text-align:center;
+	padding:0;
+	width:100%;
+	overflow-x: hidden;
+    /*padding-bottom: 10vh;*/
+    font-family: 'Ubuntu Mono', monospace;
+}
+.marquee {
+    width: 100%;
+    overflow: hidden;
+    /*border:1px solid #ccc;*/
+    /*background: black;*/
+    color: #fff;
+    margin:0;
+    padding:10px;
+}
+ul.marquee li {
+    display: none;
+    padding: 0;
+    position: relative;
+    font-size:15px;
+    /*font-size: 70px;*/
+}
+ul.marquee li.active{
+	display: inline-block;
+	animation:footerSlide 20s linear infinite;
+}
+@keyframes footerSlide{
+	0%{
+		right:-50%;
+	}
+	100%{
+		right:100%;
+	}
+}
+ul.marquee li img{
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+}
+td{
+    word-wrap: break-word;
+}
+.viewdetails:hover{
+    text-decoration: none;
+}
+.viewdetails{
+    cursor: pointer;
+    text-decoration: underline;
+}
+.navbar-right {
+    margin-right: 0px !important;
+}
+#left_menu{
+    min-height:60vh;
+    text-align: left !important;
+}
+
+@media (min-width: 768px){
+    .col-sm-9#top_content {
+        width: 80%;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    /* background: #253654; */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #506486; 
+    border-radius: 0px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #253654; 
+}
+
+#logos #logo2{
+    display: none;
+}
+.dt-body-captalize
+{
+   text-transform: capitalize; 
+}

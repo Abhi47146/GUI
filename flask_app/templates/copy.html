@@ -1,0 +1,28 @@
+<form method="post" action="/arm1" enctype="multipart/form-data">
+    <dl>
+		<h3>Coordinates of the Zone for Arm1 should be 8 comma seprated integer values only</h3>
+		<p>X1 <input type = "number" name = "Coordinates_1_X1" /></p>
+    <p>Y1 <input type = "number" name = "Coordinates_1_Y1" /></p>
+    <p>X2 <input type = "number" name = "Coordinates_1_X2" /></p>
+    <p>Y2 <input type = "number" name = "Coordinates_1_Y2" /></p>
+    <p>X3 <input type = "number" name = "Coordinates_1_X3" /></p>
+    <p>Y3 <input type = "number" name = "Coordinates_1_Y3" /></p>
+    <p>X4 <input type = "number" name = "Coordinates_1_X4" /></p>
+    <p>Y4 <input type = "number" name = "Coordinates_1_Y4" /></p>
+    </dl>
+    <p>
+		<input type="submit" value="Submit">
+	</p>
+</form>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8  offset-lg-2">
+            <h3 class="mt-5">Live Streaming</h3>
+            <img src="{{ url_for('video_feed_1') }}" width="80%">
+        </div>
+    </div>
+</div>
+</body>
+</html>
