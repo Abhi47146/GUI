@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <style>
+      .parent {
+         border: 1rem solid black;
+         margin: 1rem;
+         padding: 1rem 1rem;
+         text-align: center;
+      }
+      .division {
+         display: inline-block;
+         border: 1px solid black;
+         padding: 1rem 1rem;
+      }
+   </style>
+</head>
+<body>
+   <div class='parent'>
+      <div class='division'>
+        <form method="post" action="/arm1" enctype="multipart/form-data">
+            <dl>
+                <h3>Coordinates of the Zone for Arm1 should be 8 comma seprated integer values only</h3>
+                <p>X1 <input type = "number" name = "Coordinates_1_X1" /></p>
+            <p>Y1 <input type = "number" name = "Coordinates_1_Y1" /></p>
+            <p>X2 <input type = "number" name = "Coordinates_1_X2" /></p>
+            <p>Y2 <input type = "number" name = "Coordinates_1_Y2" /></p>
+            <p>X3 <input type = "number" name = "Coordinates_1_X3" /></p>
+            <p>Y3 <input type = "number" name = "Coordinates_1_Y3" /></p>
+            <p>X4 <input type = "number" name = "Coordinates_1_X4" /></p>
+            <p>Y4 <input type = "number" name = "Coordinates_1_Y4" /></p>
+            </dl>
+            <p>
+                <input type="submit" value="Submit">
+            </p>
+        </form>
+      </div>
+      <div class='division'>
+            <h3 class="mt-5">Live Streaming</h3>
+            <img src="{{ url_for('video_feed_1') }}" width="80%">
+      </div>
+   </div>
+</body>
+</html>

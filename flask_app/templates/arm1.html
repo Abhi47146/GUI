@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <head>
+    <link rel='shortcut icon' type='image/x-icon' href='../static/logo.jpg' />
+    <title>Traffic Intelligence Server</title>
+
+    <script src="../static/jquery/jquery-2.1.4.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="../static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <script src="../static/jquery/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../static/css/header.css">
+    <link rel="stylesheet" href="../static/css/basic.css">
+    <link rel="stylesheet" href="../static/css/footer.css">
+    <link rel="stylesheet" href="../static/css/navTabsModified.css">
+    <link rel="stylesheet" href="../static/jquery/jquery-ui.css">
+
+    <script src="../static/js/home.js"></script>
+
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+      src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="../static/css/select2-bootstrap.css">
+
+
+    <style>
+      img {
+        display: block;
+        margin-right: auto;
+      }
+
+      /* .parent {
+        border: 1rem solid black;
+        margin: 1rem;
+        padding: 1rem 1rem;
+        text-align: center;
+      } */
+
+      .division {
+        display: inline-block;
+        border: 1px solid black;
+        padding: 1rem 1rem;
+      }
+
+      td.highlight {
+        background-color: whitesmoke !important;
+      }
+
+      .dt-buttons {
+        width: 10% !important;
+        float: unset !important;
+      }
+
+      .tablestyle {
+        position: relative;
+        padding: 10px 100px 10px 100px;
+      }
+
+      .img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+
+      .btn-primary {
+        color: #fff;
+        background-color: #253654;
+        border-color: #2e6da4;
+      }
+    </style>
+
+
+
+  </head>
+
+<body>
+
+  <div class="row" id="header" style="height:50px">
+    <div class="col-sm-2"><a href="http://www.itspe.co.in/" target="_blank"><img src="../static/logo.jpg"
+          style=" overflow:hidden; height: 50px; "></a>
+    </div>
+    <div class="col-sm-8" id="title"><b>
+        <font color="white" size="10em">NAYANAM</font>
+      </b>
+    </div>
+  </div>
+  <div style="text-align:center;margin:0;width:100vw;margin-top: 30px;" class="row">
+
+
+    <div class="row">
+      <div class="col-md-2">
+        <button class="btn btn-primary float-left ml-3 fontOpenSansRegular" style="float: left;"
+          onclick="history.back()">
+          <i class="fas fa-arrow-circle-left nav-top-icon"></i>Go back
+        </button>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-4">
+        <p style="padding: 2px; border: 2px solid #253654"> How the Line Segment and Zone will look after filling
+          and submitting the given coordinates for zones and Line Segment</p>
+
+        <img class="img" src="{{url_for('static',filename='image.png')}}" alt="ITSPE " width="80%" height="80%">
+      </div>
+
+      <div class="col-md-4">
+        <form method="post" action="/arm1" enctype="multipart/form-data">
+          <table class="table table-bordered fontOpenSansRegular">
+            <tbody>
+              <h5 class="fontOpenSansBold" style="text-align:center; font-size: 15px">Zone Coordinates</h5>
+              <tr>
+                <td class="text-center fontOpenSansBold">X1,Y1</td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_XY1" class="form-control" id="Coordinates_1_XY1"
+                    placeholder="Enter X,Y Coordinates">
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">X2,Y2</td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_XY2" class="form-control" id="Coordinates_1_XY2"
+                    placeholder="Enter X,Y Coordinates">
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">X3,Y3</td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_XY3" class="form-control" id="Coordinates_1_XY3"
+                    placeholder="Enter X,Y Coordinates">
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">X4,Y4</td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_XY4" class="form-control" id="Coordinates_1_XY4"
+                    placeholder="Enter X,Y Coordinates">
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <h7 class="fontOpenSansBold" style="text-align:center; font-size: 15px">Coordinates for speed line
+                    segment</h7>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">LSX1,LSY1 </td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_LSXLSY1" class="form-control" id="Coordinates_1_LSXLSY1"
+                    placeholder="Enter Coordinates">
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">LSX2,LSY2</td>
+                <td colspan="2">
+                  <input type="text" name="Coordinates_1_LSXLSY2" class="form-control" id="Coordinates_1_LSXLSY2"
+                    placeholder="Enter Coordinates">
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="3">
+                  <h8 class="fontOpenSansBold" style="text-align:center; font-size: 15px">Distance between Line Segment
+                    (LSX1Y1,LSX2Y2) and (X3Y3,X4Y4) in Metres</h8>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center fontOpenSansBold">Distance</td>
+                <td colspan="2">
+                  <input type="text" name="dis" class="form-control" id="dis" placeholder="Enter Distance">
+                </td>
+              </tr>
+              <tr>
+                <td colspan="5" style="border: 0px solid;">
+                  <button class="btn btn-primary btn-block"
+                    style="position: absolute;left: 40%;right: 40%;width: 30%;border:1px" id="submit">
+                    <i class="fas fa-sign-in-alt btn-icon"></i>Submit
+                  </button>
+              </tr>
+              </td>
+            </tbody>
+          </table>
+          <br><br><br><br>
+        </form>
+      </div>
+
+      <div class="col-md-4">
+        <h8 class="fontOpenSansBold" style="text-align:center; font-size: 15px">Live Streaming</h8>
+        <img src="{{ url_for('video_feed_1') }}" style="height: 100%; width:100%; position: relative;">
+      </div>
+
+    </div>
+
+
+    <nav class="navbar navbar-fixed-bottom" id="footer">
+      <div class="navbar-header">
+        <a class="navbar-brand fontOpenSansRegular text-white"
+          href="http://www.thrissurcitypolice.gov.in/products/traffic-intelligence-server" target="_blank">Powered
+          by Traffic Intelligence Server</a>
+      </div>
+      <div id="licencelink" style="display:initial">
+        <a class="fontOpenSansRegular text-white" href="../licence/licence.html" target="_blank">View Licence</a>
+      </div>
+      <a class="navbar-brand navbar-right fontOpenSansRegular text-white" href="http://www.itspe.co.in/"
+        target="_blank">
+        Copyright <i class="far fa-copyright"></i> ITS Planners and Engineers
+      </a>
+    </nav>
+</body>
