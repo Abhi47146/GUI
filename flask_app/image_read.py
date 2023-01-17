@@ -20,10 +20,14 @@ frame = cv2.imread(path)
 frame = cv2.resize(frame,(640,640))
 start_point = (198,324)
 end_point = (407,324)
+vstart = (178,324)
+vend = (114,536)
 frame = cv2.line(frame, start_point, end_point, color1, thickness_l)
 frame = cv2.putText(frame, 'LSX1,' + "LSY1", start_point, font,fontScale_l, color, thickness, cv2.LINE_AA)
 frame = cv2.putText(frame, 'LSX2,' + "LSY2", end_point, font,fontScale_l, color, thickness, cv2.LINE_AA)
 
+frame = cv2.line(frame, vstart, vend, color1, thickness_l)
+frame = cv2.putText(frame, "Distance", (18,380), font,fontScale_l, color, thickness, cv2.LINE_AA)
 
 dim_list = [[134,536],[508,536],[448,421], [164,421]]
 j = 1
@@ -33,7 +37,8 @@ for cord in dim_list:
 pts = np.array(dim_list,
                np.int32)
 frame = cv2.polylines(frame, [pts] ,True, (255,0,0), 2)
-cv2.imwrite(path,frame)
+frame = cv2.line(frame, vstart, vend, color1, thickness_l)
+#cv2.imwrite(path,frame)
 while(1):
     cv2.imshow('image', frame)
     if cv2.waitKey(20) & 0xFF == 27:
