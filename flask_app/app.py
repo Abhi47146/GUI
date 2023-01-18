@@ -34,10 +34,12 @@ for arm in arms:
         parser.set(armsp, 'line_segment_coordinates_1', '')
         parser.set(armsp, 'distance_1', '')
         parser.set(armsp, 'ipadd_1', '')
+        parser.set(armsp, 'status', '')
     except:
         parser.set(armsp, 'line_segment_coordinates_1', '')
         parser.set(armsp, 'distance_1', '')
         parser.set(armsp, 'ipadd_1', '')
+        parser.set(armsp, 'status', '')
 with open('configfile.ini', 'w') as configfile:
     parser.write(configfile)
 print(ja)
@@ -130,8 +132,10 @@ def changeconfig(stream,status,num):
     parser = ConfigParser()
     configfile = "configfile.ini"
     parser.read(configfile)
-    parser.set(ja[num]['Arm'],'stream',stream)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'status', status)
+    if stream!='':
+        parser.set(ja[num]['Arm'],'stream',stream)
+    if status!='':
+        parser.set(ja[num]['Arm'] + '_SPEED', 'status', status)
     with open('configfile.ini', 'w') as configfile:
         parser.write(configfile)
 
