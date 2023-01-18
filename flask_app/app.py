@@ -5,8 +5,12 @@ from werkzeug.utils import secure_filename
 import cv2
 import numpy as np
 from configparser import ConfigParser
+import socket
 
 app = Flask(__name__)
+
+hostname = socket.gethostname()
+ipadd = socket.gethostbyname(hostname)
 
 parser = ConfigParser()
 configfile = "configfile.ini"
@@ -20,18 +24,20 @@ stream = []
 ja = []
 armsp = ''
 for arm in arms:
-    ja.append({'Junction_scn':junction_scn,'Arm':arm,'Zone':'0,0,0,0,0,0,0,0','Line_segment':'0,0,0,0','Distance':'0'})
     st = parser.get(arm,'STREAM')
     stream.append(st)
+    ja.append({'Junction_scn':junction_scn,'Arm':arm,'Zone':'0,0,0,0,0,0,0,0','Line_segment':'0,0,0,0','Distance':'0','Stream':st,'Status':'on','IPadd':''})
     armsp = arm + '_SPEED'
     try:
         parser.add_section(armsp)
         print(armsp)
-        parser.set(armsp, 'line_segment_coordinates', '')
-        parser.set(armsp, 'distance', '')
+        parser.set(armsp, 'line_segment_coordinates_1', '')
+        parser.set(armsp, 'distance_1', '')
+        parser.set(armsp, 'ipadd_1', '')
     except:
-        parser.set(armsp, 'line_segment_coordinates', '')
-        parser.set(armsp, 'distance', '')
+        parser.set(armsp, 'line_segment_coordinates_1', '')
+        parser.set(armsp, 'distance_1', '')
+        parser.set(armsp, 'ipadd_1', '')
 with open('configfile.ini', 'w') as configfile:
     parser.write(configfile)
 print(ja)
@@ -69,7 +75,7 @@ form_data = {
 
 
 def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
-    if(cd!=',,,,,,,'):
+    if(cd!=',,,'):
         try:
             t = len(list(map(int,cd.split(","))))
             if(t==8):
@@ -78,7 +84,7 @@ def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
                 ja[num]['Zone'] = coordinates
         except:
             coordinates = coordinates
-    if(lcd!=',,,'):
+    if(lcd!=','):
         try:
             t = len(list(map(int,lcd.split(","))))
             if(t==4):
@@ -120,6 +126,14 @@ def gen_frames(camera,coordinates,line_coordinates):  # generate frame by frame 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
+def changeconfig(stream,status,num):
+    parser = ConfigParser()
+    configfile = "configfile.ini"
+    parser.read(configfile)
+    parser.set(ja[num]['Arm'],'stream',stream)
+    parser.set(ja[num]['Arm'] + '_SPEED', 'status', status)
+    with open('configfile.ini', 'w') as configfile:
+        parser.write(configfile)
 
 @app.route('/arm1/video_feed')
 def video_feed_1():
@@ -322,5 +336,5 @@ def JNdata():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True,host='localhost',port=7000)
-    app.run(debug=True,host='0.0.0.0',port=7000)
+    # app.run(debug=True,host='localhost',port=80)
+    app.run(debug=True,host='0.0.0.0',port=80)
