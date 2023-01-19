@@ -26,7 +26,19 @@ armsp = ''
 for arm in arms:
     st = parser.get(arm,'STREAM')
     stream.append(st)
-    ja.append({'Junction_scn':junction_scn,'Arm':arm,'Zone':'0,0,0,0,0,0,0,0','Line_segment':'0,0,0,0','Distance':'0','Stream':st,'Status':'on','IPadd':''})
+    ja.append(
+            {
+                'Junction_scn':junction_scn,
+                'Arm':arm,
+                'Zone':'0,0,0,0,0,0,0,0',
+                'Line_segment':'0,0,0,0',
+                'Distance':'0',
+                'Stream':st,
+                'Status':'ON',
+                'IPadd':'',
+                'Edit': '1',
+            }
+        )
     armsp = arm + '_SPEED'
     try:
         parser.add_section(armsp)
@@ -75,6 +87,8 @@ form_data = {
 }
 
 
+def fillcoordinates():
+    pass
 
 def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
     if(cd!=',,,'):
@@ -313,6 +327,7 @@ def upload_cord_4():
 def index():
     """Home page."""
     return render_template('index.html',form_data = form_data)
+    
 
 @app.route('/arm1')
 def arm1():
@@ -332,7 +347,16 @@ def arm4():
 
 @app.route('/test')
 def test():
-    return render_template('test.html')
+    return render_template('home.html')
+
+@app.route('/',methods = ['POST'])
+def test1():
+    if request.method == 'POST':
+        print(request.form.get('scn'))
+        print(request.form.get('stream'))
+        return render_template('index.html',form_data = form_data)
+    else:
+        return render_template('index.html',form_data = form_data)
 
 @app.route('/getJNdata',methods = ['POST','GET'])
 def JNdata():
