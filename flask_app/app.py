@@ -34,7 +34,7 @@ for arm in arms:
                 'Line_segment':'0,0,0,0',
                 'Distance':'0',
                 'Stream':st,
-                'Status':'ON',
+                'Status':'OFF',
                 'IPadd':'',
                 'Edit': '1',
             }
@@ -87,8 +87,30 @@ form_data = {
 }
 
 
-def fillcoordinates():
-    pass
+def store_data(num,configfile,a,b,c):
+    parser = ConfigParser()
+    configfile = configfile
+    parser.read(configfile)
+    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
+    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
+    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
+    with open('configfile.ini', 'w') as configfile:
+        parser.write(configfile)
+
+def get_coordinates(cdx,lcdx):
+    cd,lcd = '',''
+    for j in range(1,5):
+        if(j!=4):
+            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
+        else:
+            cd = cd + str(request.form.get(cdx + str(j),default=0))
+    for j in range(1,3):
+        if(j!=2):
+            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
+        else:
+            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
+    dis = str(request.form.get('dis',default='0'))
+    return cd,lcd,dis
 
 def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
     if(cd!=',,,'):
@@ -201,126 +223,46 @@ def video_feed_4():
 
 @app.route('/arm1', methods=['POST'])
 def upload_cord_1():
-    global coordinates_1
-    global lsv_1
+    global coordinates_1,lsv_1,configfile
     num = 0
-    cd = ''
     cdx = 'Coordinates_1_XY'
-    lcd = ''
     lcdx = 'Coordinates_1_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
     a,b,c = check_coordinates(cd,st_1,coordinates_1,form_data,lcd,lsv_1,ls_1,0,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    store_data(num,"configfile.ini",a,b,c)
     return redirect(request.url)
 
 @app.route('/arm2', methods=['POST'])
 def upload_cord_2():
-    global coordinates_2
-    global lsv_2
+    global coordinates_2,lsv_2,configfile
     num = 1
-    cd = ''
     cdx = 'Coordinates_2_XY'
-    lcd = ''
     lcdx = 'Coordinates_2_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_2,coordinates_2,form_data,lcd,lsv_2,ls_2,1,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_2,coordinates_2,form_data,lcd,lsv_2,ls_2,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/arm3', methods=['POST'])
 def upload_cord_3():
-    global coordinates_3
-    global lsv_3
+    global coordinates_3,lsv_3,configfile
     num = 2
-    cd = ''
     cdx = 'Coordinates_3_XY'
-    lcd = ''
     lcdx = 'Coordinates_3_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_3,coordinates_3,form_data,lcd,lsv_3,ls_3,2,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_3,coordinates_3,form_data,lcd,lsv_3,ls_3,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/arm4', methods=['POST'])
 def upload_cord_4():
-    global coordinates_4
-    global lsv_4
+    global coordinates_4,lsv_4,configfile
     num = 3
-    cd = ''
     cdx = 'Coordinates_4_XY'
-    lcd = ''
     lcdx = 'Coordinates_4_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_4,coordinates_4,form_data,lcd,lsv_4,ls_4,3,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_4,coordinates_4,form_data,lcd,lsv_4,ls_4,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/')
