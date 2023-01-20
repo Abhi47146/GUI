@@ -23,6 +23,7 @@ armslen = len(arms)
 stream = []
 ja = []
 armsp = ''
+c=0
 for arm in arms:
     st = parser.get(arm,'STREAM')
     stream.append(st)
@@ -34,7 +35,7 @@ for arm in arms:
                 'Line_segment':'0,0,0,0',
                 'Distance':'0',
                 'Stream':st,
-                'Status':'OFF',
+                'Status':'ON',
                 'IPadd':'',
                 'Edit': '1',
             }
@@ -52,6 +53,16 @@ for arm in arms:
         parser.set(armsp, 'distance_1', '')
         parser.set(armsp, 'ipadd_1', '')
         parser.set(armsp, 'status', '')
+    try:
+        camera = cv2.VideoCapture(ja[c]["Stream"])
+        success, frame = camera.read()
+        if success:
+            parser.set(ja[c]['Arm'] + '_SPEED', 'status', 'ON')
+            ja[c]['Status'] = 'ON'
+    except:
+        parser.set(ja[c]['Arm'] + '_SPEED', 'status', 'OFF')
+        ja[c]['Status'] = 'OFF'
+    c += 1
 with open('configfile.ini', 'w') as configfile:
     parser.write(configfile)
 print(ja)
@@ -85,6 +96,27 @@ form_data = {
     st_4:'',
     ls_4:'',
 }
+
+def changeconfig(scn,stream,num):
+    parser = ConfigParser()
+    configfile = "configfile.ini"
+    parser.read(configfile)
+    if len(scn)>=8 and len(scn)<=9:
+        pass # Will change SCN here
+    if stream!='':
+        try:
+            camera = cv2.VideoCapture(stream)
+            success, frame = camera.read()
+            if success:
+                parser.set(ja[num]['Arm'],'stream',stream)
+                ja[num]['Stream'] = stream
+                parser.set(ja[num]['Arm'] + '_SPEED', 'status', 'ON')
+                ja[num]['Status'] = 'ON'
+        except:
+            parser.set(ja[num]['Arm'] + '_SPEED', 'status', 'OFF')
+            ja[num]['Status'] = 'OFF'
+    with open('configfile.ini', 'w') as configfile:
+        parser.write(configfile)
 
 
 def store_data(num,configfile,a,b,c):
@@ -164,22 +196,11 @@ def gen_frames(camera,coordinates,line_coordinates):  # generate frame by frame 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-def changeconfig(stream,status,num):
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    if stream!='':
-        parser.set(ja[num]['Arm'],'stream',stream)
-    if status!='':
-        parser.set(ja[num]['Arm'] + '_SPEED', 'status', status)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
-
 @app.route('/arm1/video_feed')
 def video_feed_1():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=1):
-        camera = cv2.VideoCapture(stream[0])
+        camera = cv2.VideoCapture(ja[0]['Stream'])
         coordinates_1 = form_data.get(st_1)
         lsv_1 = form_data.get(ls_1)
         return Response(gen_frames(camera,coordinates_1,lsv_1), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -190,7 +211,7 @@ def video_feed_1():
 def video_feed_2():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=2):
-        camera = cv2.VideoCapture(stream[1])
+        camera = cv2.VideoCapture(ja[1]['Stream'])
         coordinates_2 = form_data.get(st_2)
         lsv_2 = form_data.get(ls_2)
         return Response(gen_frames(camera,coordinates_2,lsv_2), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -201,7 +222,7 @@ def video_feed_2():
 def video_feed_3():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=3):
-        camera = cv2.VideoCapture(stream[2])
+        camera = cv2.VideoCapture(ja[2]['Stream'])
         coordinates_3 = form_data.get(st_3)
         lsv_3 = form_data.get(ls_3)
         return Response(gen_frames(camera,coordinates_3,lsv_3), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -212,7 +233,7 @@ def video_feed_3():
 def video_feed_4():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=4):
-        camera = cv2.VideoCapture(stream[3])
+        camera = cv2.VideoCapture(ja[3]['Stream'])
         coordinates_4 = form_data.get(st_4)
         lsv_4 = form_data.get(ls_4)
         return Response(gen_frames(camera,coordinates_4,lsv_4), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -294,8 +315,11 @@ def test():
 @app.route('/',methods = ['POST'])
 def test1():
     if request.method == 'POST':
-        print(request.form.get('scn'))
-        print(request.form.get('stream'))
+        scn = request.form.get('scn')
+        stream = request.form.get('stream')
+        print(stream)
+        num = 0
+        changeconfig(scn,stream,num)
         return render_template('index.html',form_data = form_data)
     else:
         return render_template('index.html',form_data = form_data)
