@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="../static/css/navTabsModified.css">
     <link rel="stylesheet" href="../static/jquery/jquery-ui.css">
 
-    <script src="../static/js/home.js"></script>
+    <!-- <script src="../static/js/home.js"></script> -->
 
     <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/jquery-confirm.min.css">
@@ -53,6 +53,53 @@
 
 <body>
 
+    <!-- Modal -->
+    <!-- Button trigger modal -->
+    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Launch demo modal
+    </button> -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="./" method="post" id="edit_form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="scn">SCN</label>
+                            <input type="text" class="form-control" id="scn" name="scn" aria-describedby="scnHelp"
+                                placeholder="Enter SCN">
+                            <!-- <small id="emailHelp" class="form-text text-muted">Enter SCN here</small> -->
+                        </div>
+                        <div class="form-group">
+                            <label for="stream">Stream Link</label>
+                            <input type="text" class="form-control" id="stream" name="stream"
+                                placeholder="Enter Stream Link">
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port</label>
+                            <input type="text" class="form-control" id="port" name="port" placeholder="Enter Port">
+                        </div>
+                        <input type="hidden" id="row" name="row">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                        <button type="submit" form="edit_form" class="btn btn-primary" id="save" value="save">Save
+                            changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal end -->
+
     <div class="row" id="header" style="height:50px">
         <div class="col-sm-2"><a href="http://www.itspe.co.in/" target="_blank"><img src="../static/logo.jpg"
                     style=" overflow:hidden;  height: 50px;"></a>
@@ -70,7 +117,6 @@
     </div>
 
     <div style="text-align:center;margin:0;width:100vw;margin-top: 30px;" class="row">
-        <form action="/" method="post">
         <div class="row">
 
             <div class="col-md-12 tablestyle">
@@ -80,21 +126,22 @@
                             <th>SCN</th>
                             <th>Link</th>
                             <th>STREAM LINK</th>
+                            <th>Port</th>
                             <th>Status</th>
                             <th>Action</th>
                         </thead>
-                        
+
                         <tbody id="alert_body">
 
                         </tbody>
-                        
+
                     </table>
                 </div>
                 <div class="mt-5 mb-5"></div>
             </div>
 
         </div>
-        </form>
+
     </div>
     <nav class="navbar navbar-fixed-bottom" id="footer">
         <div class="navbar-header">
@@ -111,9 +158,31 @@
         </a>
     </nav>
 
+    <script src="../static/js/home.js"></script>
     <script>
-        // function myFunction(){
-        //     alert('hi');
-        // }
+        $(document).on("click", ".open-AddBookDialog", function () {
+            var scnId = $(this).data('id');
+            var stream = $(this).data('stream');
+            var port = $(this).data('port');
+            var row = $(this).data('row');
+            $('#scn').val(scnId);
+            $('#stream').val(stream);
+            $('#port').val(port);
+            $('#row').val(row);
+            // $(".modal-body #bookId").val(myBookId);
+            // // As pointed out in comments, 
+            // it is unnecessary to have to manually call the modal.
+            // $('#addBookDialog').modal('show');
+            //alert('hi'+scnId);
+        });
+
+        $(document).ready(function () {
+            $("#save").click(function (event) {
+                if (!confirm('Are you sure that you want to submit the form'))
+                    event.preventDefault();
+            });
+        });
     </script>
+
+
 </body>

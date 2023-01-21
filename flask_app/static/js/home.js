@@ -47,10 +47,7 @@ $(document).ready(function () {
             // 	},
             // 	className: "dt-body-center"
             // },
-            { "data": "Arm", "render": function (data) {
-                data = '<input type="text" name="scn" class="form-control" value="'+data+'">';
-                return data;
-            } },
+            { "data": "Arm" },
             {
                 "data": "Arm", "render": function (data, type, row, meta) {
                     if (type === 'display') {
@@ -61,10 +58,8 @@ $(document).ready(function () {
                     return data;
                 }
             },
-            { "data": "Stream", "render": function (data) {
-                data = '<input type="text" name="stream" class="form-control" value="'+data+'">';
-                return data;
-            } },
+            { "data": "Stream" },
+            { "data": "Port" },
             {
                 "data": "Status", "render": function (data) {
 
@@ -78,8 +73,10 @@ $(document).ready(function () {
                 }
             },
             {
-                "data": "Edit", "render": function (data) {
-                    data = '<input type="submit" class="btn btn-primary" value="edit">';
+                "data": "Edit", "render": function (data, type, full, meta) {
+                    // data = '<button class="btn btn-primary">Edit</button>';
+                    row=meta.row+1;
+                    data = '<a class="open-AddBookDialog btn btn-info btn-md" data-toggle="modal" data-id="' + full.Arm + '" data-stream="' + full.Stream + '" data-port="'+full.Port+'" data-row="'+row+'" href="#exampleModal">' + 'Edit' + '</a>';
                     return data;
                 }
             }
@@ -96,15 +93,14 @@ $(document).ready(function () {
             { className: "text-center", "targets": [1] },
             { className: "text-center", "targets": [2] },
             { className: "text-center", "targets": [3] },
-            { className: "text-center", "targets": [4] }
+            { className: "text-center", "targets": [4] },
+            { className: "text-center", "targets": [5] }
         ],
     });
 
     $("submit").click(function () {
-
         window.location = "/"
     })
-
 
 
 
@@ -116,7 +112,10 @@ $(document).ready(function () {
     //     return `<span style="background-color: ${data}; width:136px;display:grid;/*! margin-left: 100px; *//*! margin-right: 100px; */height: 24px;align-content: center;">${data}</span>`;
     // }
 
-    
 
+    // $("#eventsdata").on("click", ".btn.btn-info.btn-md", function () {
+    //     $("#eventsdata").load("editbutton");
+    //     $("#myModal").modal('show');
+    // });
 });
 

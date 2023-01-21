@@ -35,9 +35,10 @@ for arm in arms:
                 'Line_segment':'0,0,0,0',
                 'Distance':'0',
                 'Stream':st,
+		        'Port':1233,
                 'Status':'ON',
                 'IPadd':'',
-                'Edit': '1',
+                'Edit': junction_scn,
             }
         )
     armsp = arm + '_SPEED'
@@ -331,4 +332,4 @@ def JNdata():
 
 if __name__ == '__main__':
     # app.run(debug=True,host='localhost',port=80)
-    app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True,host='0.0.0.0',port=8000)
