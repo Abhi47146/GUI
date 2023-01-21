@@ -3,10 +3,10 @@
 
 <head>
     <link rel='shortcut icon' type='image/x-icon' href='../static/logo.jpg' />
-    <title>Traffic Intelligence Server</title>
+    <title>Nayanam</title>
 
     <script src="../static/jquery/jquery-2.1.4.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    <link rel="stylesheet" href="../static/css/all.css"
         integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <script src="../static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 
@@ -20,16 +20,17 @@
     <script src="../static/js/home.js"></script>
 
     <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <link rel="stylesheet" href="../static/css/jquery-confirm.min.css">
+    <script src="../static/js/jquery-confirm.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="../static/js/jquery.dataTables.js"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <link href="../static/css/select2.min.css" rel="stylesheet" />
+    <script src="../static/js/select2.min.js"></script>
     <link rel="stylesheet" href="../static/css/select2-bootstrap.css">
+
+
 
 
     <style>
@@ -60,7 +61,7 @@
         </div>
 
         <div class="col-sm-8" id="title"><b>
-                <font color="white" size="10em">NAYANAM</font>
+                <font color="white" size="10em">CAMERAS</font>
             </b>
 
         </div>
@@ -69,34 +70,37 @@
     </div>
 
     <div style="text-align:center;margin:0;width:100vw;margin-top: 30px;" class="row">
-
+        <form action="test" method="post">
         <div class="row">
 
             <div class="col-md-12 tablestyle">
                 <div class="fontOpenSansRegular">
                     <table class="table table-bordered table-striped fontOpenSansRegular" id="dataTable">
                         <thead>
-                            <th>SCN no.</th>
-                            <th>No. of Arms</th>
-                            <th>Zone Coordinates</th>
-                            <th>Line Segments</th>
-                            <th>Distance</th>
+                            <th>SCN</th>
+                            <th>Link</th>
+                            <th>STREAM LINK</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </thead>
+                        
                         <tbody id="alert_body">
 
                         </tbody>
+                        
                     </table>
                 </div>
                 <div class="mt-5 mb-5"></div>
             </div>
 
         </div>
+        </form>
     </div>
     <nav class="navbar navbar-fixed-bottom" id="footer">
         <div class="navbar-header">
-            <a class="navbar-brand fontOpenSansRegular text-white"
-                href="http://www.thrissurcitypolice.gov.in/products/traffic-intelligence-server" target="_blank">Powered
-                by Traffic Intelligence Server</a>
+            <a class="navbar-brand fontOpenSansRegular text-white" href="http://www.itspe.co.in/"
+                target="_blank">Powered
+                by Nayanam</a>
         </div>
         <div id="licencelink" style="display:initial">
             <a class="fontOpenSansRegular text-white" href="../licence/licence.html" target="_blank">View Licence</a>
@@ -106,6 +110,10 @@
             Copyright <i class="far fa-copyright"></i> ITS Planners and Engineers
         </a>
     </nav>
-</body>
 
-</html>
+    <script>
+        // function myFunction(){
+        //     alert('hi');
+        // }
+    </script>
+</body>

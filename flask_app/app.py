@@ -5,8 +5,12 @@ from werkzeug.utils import secure_filename
 import cv2
 import numpy as np
 from configparser import ConfigParser
+import socket
 
 app = Flask(__name__)
+
+hostname = socket.gethostname()
+ipadd = socket.gethostbyname(hostname)
 
 parser = ConfigParser()
 configfile = "configfile.ini"
@@ -19,19 +23,46 @@ armslen = len(arms)
 stream = []
 ja = []
 armsp = ''
+c=0
 for arm in arms:
-    ja.append({'Junction_scn':junction_scn,'Arm':arm,'Zone':'0,0,0,0,0,0,0,0','Line_segment':'0,0,0,0','Distance':'0'})
     st = parser.get(arm,'STREAM')
     stream.append(st)
+    ja.append(
+            {
+                'Junction_scn':junction_scn,
+                'Arm':arm,
+                'Zone':'0,0,0,0,0,0,0,0',
+                'Line_segment':'0,0,0,0',
+                'Distance':'0',
+                'Stream':st,
+                'Status':'ON',
+                'IPadd':'',
+                'Edit': '1',
+            }
+        )
     armsp = arm + '_SPEED'
     try:
         parser.add_section(armsp)
         print(armsp)
-        parser.set(armsp, 'line_segment_coordinates', '')
-        parser.set(armsp, 'distance', '')
+        parser.set(armsp, 'line_segment_coordinates_1', '')
+        parser.set(armsp, 'distance_1', '')
+        parser.set(armsp, 'ipadd_1', '')
+        parser.set(armsp, 'status', '')
     except:
-        parser.set(armsp, 'line_segment_coordinates', '')
-        parser.set(armsp, 'distance', '')
+        parser.set(armsp, 'line_segment_coordinates_1', '')
+        parser.set(armsp, 'distance_1', '')
+        parser.set(armsp, 'ipadd_1', '')
+        parser.set(armsp, 'status', '')
+    try:
+        camera = cv2.VideoCapture(ja[c]["Stream"])
+        success, frame = camera.read()
+        if success:
+            parser.set(ja[c]['Arm'] + '_SPEED', 'status', 'ON')
+            ja[c]['Status'] = 'ON'
+    except:
+        parser.set(ja[c]['Arm'] + '_SPEED', 'status', 'OFF')
+        ja[c]['Status'] = 'OFF'
+    c += 1
 with open('configfile.ini', 'w') as configfile:
     parser.write(configfile)
 print(ja)
@@ -66,10 +97,55 @@ form_data = {
     ls_4:'',
 }
 
+def changeconfig(scn,stream,num):
+    parser = ConfigParser()
+    configfile = "configfile.ini"
+    parser.read(configfile)
+    if len(scn)>=8 and len(scn)<=9:
+        pass # Will change SCN here
+    if stream!='':
+        try:
+            camera = cv2.VideoCapture(stream)
+            success, frame = camera.read()
+            if success:
+                parser.set(ja[num]['Arm'],'stream',stream)
+                ja[num]['Stream'] = stream
+                parser.set(ja[num]['Arm'] + '_SPEED', 'status', 'ON')
+                ja[num]['Status'] = 'ON'
+        except:
+            parser.set(ja[num]['Arm'] + '_SPEED', 'status', 'OFF')
+            ja[num]['Status'] = 'OFF'
+    with open('configfile.ini', 'w') as configfile:
+        parser.write(configfile)
 
+
+def store_data(num,configfile,a,b,c):
+    parser = ConfigParser()
+    configfile = configfile
+    parser.read(configfile)
+    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
+    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
+    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
+    with open('configfile.ini', 'w') as configfile:
+        parser.write(configfile)
+
+def get_coordinates(cdx,lcdx):
+    cd,lcd = '',''
+    for j in range(1,5):
+        if(j!=4):
+            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
+        else:
+            cd = cd + str(request.form.get(cdx + str(j),default=0))
+    for j in range(1,3):
+        if(j!=2):
+            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
+        else:
+            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
+    dis = str(request.form.get('dis',default='0'))
+    return cd,lcd,dis
 
 def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
-    if(cd!=',,,,,,,'):
+    if(cd!=',,,'):
         try:
             t = len(list(map(int,cd.split(","))))
             if(t==8):
@@ -78,7 +154,7 @@ def check_coordinates(cd,st,coordinates,form_data,lcd,lsv,lst,num,dis):
                 ja[num]['Zone'] = coordinates
         except:
             coordinates = coordinates
-    if(lcd!=',,,'):
+    if(lcd!=','):
         try:
             t = len(list(map(int,lcd.split(","))))
             if(t==4):
@@ -120,12 +196,11 @@ def gen_frames(camera,coordinates,line_coordinates):  # generate frame by frame 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-
 @app.route('/arm1/video_feed')
 def video_feed_1():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=1):
-        camera = cv2.VideoCapture(stream[0])
+        camera = cv2.VideoCapture(ja[0]['Stream'])
         coordinates_1 = form_data.get(st_1)
         lsv_1 = form_data.get(ls_1)
         return Response(gen_frames(camera,coordinates_1,lsv_1), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -136,7 +211,7 @@ def video_feed_1():
 def video_feed_2():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=2):
-        camera = cv2.VideoCapture(stream[1])
+        camera = cv2.VideoCapture(ja[1]['Stream'])
         coordinates_2 = form_data.get(st_2)
         lsv_2 = form_data.get(ls_2)
         return Response(gen_frames(camera,coordinates_2,lsv_2), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -147,7 +222,7 @@ def video_feed_2():
 def video_feed_3():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=3):
-        camera = cv2.VideoCapture(stream[2])
+        camera = cv2.VideoCapture(ja[2]['Stream'])
         coordinates_3 = form_data.get(st_3)
         lsv_3 = form_data.get(ls_3)
         return Response(gen_frames(camera,coordinates_3,lsv_3), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -158,7 +233,7 @@ def video_feed_3():
 def video_feed_4():
     #Video streaming route. Put this in the src attribute of an img tag
     if(armslen>=4):
-        camera = cv2.VideoCapture(stream[3])
+        camera = cv2.VideoCapture(ja[3]['Stream'])
         coordinates_4 = form_data.get(st_4)
         lsv_4 = form_data.get(ls_4)
         return Response(gen_frames(camera,coordinates_4,lsv_4), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -169,132 +244,53 @@ def video_feed_4():
 
 @app.route('/arm1', methods=['POST'])
 def upload_cord_1():
-    global coordinates_1
-    global lsv_1
+    global coordinates_1,lsv_1,configfile
     num = 0
-    cd = ''
     cdx = 'Coordinates_1_XY'
-    lcd = ''
     lcdx = 'Coordinates_1_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
     a,b,c = check_coordinates(cd,st_1,coordinates_1,form_data,lcd,lsv_1,ls_1,0,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    store_data(num,"configfile.ini",a,b,c)
     return redirect(request.url)
 
 @app.route('/arm2', methods=['POST'])
 def upload_cord_2():
-    global coordinates_2
-    global lsv_2
+    global coordinates_2,lsv_2,configfile
     num = 1
-    cd = ''
     cdx = 'Coordinates_2_XY'
-    lcd = ''
     lcdx = 'Coordinates_2_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_2,coordinates_2,form_data,lcd,lsv_2,ls_2,1,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_2,coordinates_2,form_data,lcd,lsv_2,ls_2,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/arm3', methods=['POST'])
 def upload_cord_3():
-    global coordinates_3
-    global lsv_3
+    global coordinates_3,lsv_3,configfile
     num = 2
-    cd = ''
     cdx = 'Coordinates_3_XY'
-    lcd = ''
     lcdx = 'Coordinates_3_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_3,coordinates_3,form_data,lcd,lsv_3,ls_3,2,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_3,coordinates_3,form_data,lcd,lsv_3,ls_3,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/arm4', methods=['POST'])
 def upload_cord_4():
-    global coordinates_4
-    global lsv_4
+    global coordinates_4,lsv_4,configfile
     num = 3
-    cd = ''
     cdx = 'Coordinates_4_XY'
-    lcd = ''
     lcdx = 'Coordinates_4_LSXLSY'
-    for j in range(1,5):
-        if(j!=4):
-            cd = cd + str(request.form.get(cdx + str(j),default=0)) + ','
-        else:
-            cd = cd + str(request.form.get(cdx + str(j),default=0))
-    for j in range(1,3):
-        if(j!=2):
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0)) + ','
-        else:
-            lcd = lcd + str(request.form.get(lcdx + str(j),default=0))
-    dis = str(request.form.get('dis',default='0'))
-    a,b,c = check_coordinates(cd,st_4,coordinates_4,form_data,lcd,lsv_4,ls_4,3,dis)
-    parser = ConfigParser()
-    configfile = "configfile.ini"
-    parser.read(configfile)
-    parser.set(ja[num]['Arm'],'zone_dimensions_1',a)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'line_segment_coordinates_1', b)
-    parser.set(ja[num]['Arm'] + '_SPEED', 'distance_1', c)
-    with open('configfile.ini', 'w') as configfile:
-        parser.write(configfile)
+    cd,lcd,dis = get_coordinates(cdx,lcdx)
+    a,b,c = check_coordinates(cd,st_4,coordinates_4,form_data,lcd,lsv_4,ls_4,num,dis)
+    store_data(num,configfile,a,b,c)
     return redirect(request.url)
 
 @app.route('/')
 def index():
     """Home page."""
     return render_template('index.html',form_data = form_data)
+    
 
 @app.route('/arm1')
 def arm1():
@@ -314,7 +310,19 @@ def arm4():
 
 @app.route('/test')
 def test():
-    return render_template('test.html')
+    return render_template('home.html')
+
+@app.route('/',methods = ['POST'])
+def test1():
+    if request.method == 'POST':
+        scn = request.form.get('scn')
+        stream = request.form.get('stream')
+        print(stream)
+        num = 0
+        changeconfig(scn,stream,num)
+        return render_template('index.html',form_data = form_data)
+    else:
+        return render_template('index.html',form_data = form_data)
 
 @app.route('/getJNdata',methods = ['POST','GET'])
 def JNdata():
@@ -322,5 +330,5 @@ def JNdata():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True,host='localhost',port=7000)
-    app.run(debug=True,host='0.0.0.0',port=7000)
+    # app.run(debug=True,host='localhost',port=80)
+    app.run(debug=True,host='0.0.0.0',port=80)
