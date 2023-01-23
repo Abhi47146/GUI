@@ -76,9 +76,11 @@ $(document).ready(function () {
                 "data": "Edit", "render": function (data, type, full, meta) {
                     // data = '<button class="btn btn-primary">Edit</button>';
                     row=meta.row+1;
-                    data = '<a class="open-AddBookDialog btn btn-info btn-md" data-toggle="modal" data-id="' + full.Arm + '" data-stream="' + full.Stream + '" data-port="'+full.Port+'" data-row="'+row+'" href="#exampleModal">' + 'Edit' + '</a>';
+                    data = '<a class="open-AddBookDialog btn edit-btn btn-info btn-md" data-toggle="modal" data-id="' + full.Arm + '" data-stream="' + full.Stream + '" data-port="'+full.Port+'" data-row="'+row+'" href="#exampleModal">' + 'Edit' + '</a>';
+                    data = data+ 
+                    `<button class="btn btn-danger" onclick=myFunc(${meta.row}) data-tag=${row}>Delete</button>`;
                     return data;
-                }
+                },
             }
             // { "data": "LineColourGroup",render:renderColour }
         ],
@@ -100,7 +102,9 @@ $(document).ready(function () {
 
     $("submit").click(function () {
         window.location = "/"
-    })
+    });
+
+
 
 
 

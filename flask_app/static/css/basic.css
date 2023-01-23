@@ -57,6 +57,23 @@ td{
     text-align: left !important;
 }
 
+.camera-div{
+    display: inline-block;
+    text-align: center;
+}
+
+.add-camera{
+    margin-top: 1px;
+    background-color: #253654 !important;
+    border-color: #253654 !important;
+}
+
+.edit-btn{
+    background-color: #253654 !important;
+    border-color: #253654 !important;
+    
+}
+
 @media (min-width: 768px){
     .col-sm-9#top_content {
         width: 80%;

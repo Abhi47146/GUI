@@ -29,6 +29,22 @@
     <link href="../static/css/select2.min.css" rel="stylesheet" />
     <script src="../static/js/select2.min.js"></script>
     <link rel="stylesheet" href="../static/css/select2-bootstrap.css">
+    <style>
+        .button {
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+        }
+        
+        .button1 {background-color: #4CAF50;} /* Green */
+        .button2 {background-color: #ff0000;} /* Red */
+    </style>
 
 
 
@@ -58,7 +74,45 @@
     <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
         Launch demo modal
     </button> -->
-
+    <div class="modal fade" id="example1Modal" tabindex="-1" role="dialog" aria-labelledby="example1ModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal1Label">Camera Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="./" method="post" id="add_form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="scn">SCN</label>
+                            <input type="text" class="form-control" id="scn_add" name="scn" aria-describedby="scnHelp"
+                                placeholder="Enter SCN">
+                            <!-- <small id="emailHelp" class="form-text text-muted">Enter SCN here</small> -->
+                        </div>
+                        <div class="form-group">
+                            <label for="stream">Stream Link</label>
+                            <input type="text" class="form-control" id="stream_add" name="stream"
+                                placeholder="Enter Stream Link">
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port</label>
+                            <input type="text" class="form-control" id="port_add" name="port" placeholder="Enter Port">
+                        </div>
+                        <input type="hidden" id="row_add" name="row">
+                        <input type="hidden" id="add_cam" name="add_cam" value="add">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                        <button type="submit" form="add_form" class="btn btn-primary" id="save_add" value="save">Save
+                            changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -115,7 +169,12 @@
 
 
     </div>
-
+    <div class="camera-div">
+        <div>
+            <a class="open-AddBookDialog btn btn-info btn-md add-camera" data-toggle="modal" href="#example1Modal">Add Camera</a>
+        </div>  
+    </div>
+    
     <div style="text-align:center;margin:0;width:100vw;margin-top: 30px;" class="row">
         <div class="row">
 
@@ -182,7 +241,44 @@
                     event.preventDefault();
             });
         });
-    </script>
 
+        $(document).ready(function () {
+            $("#save_add").click(function (event) {
+                if (!confirm('Are you sure that you want to submit the form'))
+                    event.preventDefault();
+            });
+        });
+
+
+        function myFunc(data){
+            // alert(data);
+            if (confirm('Are you sure that you want to delete the row')){
+                // alert(data);
+                fetch('/delete', {
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    },
+                    method : 'POST',
+                    body : JSON.stringify( {
+                        'row' : data
+                    })
+                })
+                .then(function (response){
+
+                    if(response.ok) {
+                        // return response.json()
+                    }
+                    else {
+                        throw Error('Something went wrong');
+                    }
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+
+            }
+
+        }
+    </script>
 
 </body>
