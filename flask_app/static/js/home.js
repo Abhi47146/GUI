@@ -1,4 +1,5 @@
-$(document).ready(function() {
+$(document).ready(function () {
+
 
     // var somejson;
     // $.ajax({
@@ -15,13 +16,16 @@ $(document).ready(function() {
     //         alert("error");
     //     }
     // });
-// return;
-    console.log('asd')
+    // return;
+    //console.log('asd')
     $('#dataTable').DataTable({
-		"processing": true,
-		"pageLength": 10,
-		"ajax": {
-			
+        "processing": false,
+        //"pageLength": 10,
+        "bPaginate": false,
+        "bFilter": false,
+        "bInfo": false,
+        "ajax": {
+
             // 'dataType': "jsonp",
             // "async": true,
             // "crossDomain": true,
@@ -31,52 +35,77 @@ $(document).ready(function() {
             'contentType': 'application/json',
             'accept': 'application/json',
             'dataType': "json",
-			 dataSrc: '',
-            
-           
-		},
-		"columns": [
-			// {
-			// 	data: "Service",
-			// 	render: function (data) {
-			// 		return '<input type="radio" class="editor-active" name="service_id" id=' + data + ' value=' + data + '>';
-			// 	},
-			// 	className: "dt-body-center"
-			// },
-            { "data": "Junction_scn" },
-            { "data": "Arm" ,  "render": function(data, type, row, meta){
-                if(type === 'display'){
-                    arm = meta.row +1;
-                    data = '<a href="arm' + arm + '" >' + data + '</a>';
+            'dataSrc': '',
+
+
+        },
+        "columns": [
+            // {
+            // 	data: "Service",
+            // 	render: function (data) {
+            // 		return '<input type="radio" class="editor-active" name="service_id" id=' + data + ' value=' + data + '>';
+            // 	},
+            // 	className: "dt-body-center"
+            // },
+            { "data": "Arm" },
+            {
+                "data": "Arm", "render": function (data, type, row, meta) {
+                    if (type === 'display') {
+                        arm = meta.row + 1;
+                        data = '<a href="arm' + arm + '" >' + "Link" + '</a>';
+                    }
+
+                    return data;
                 }
-    
-                return data;
-             } },
+            },
+            { "data": "Stream" },
+            { "data": "Port" },
+            {
+                "data": "Status", "render": function (data) {
 
-			{ "data": "Zone" },
-            { "data": "Line_segment" },
-            { "data": "Distance" },
+                    if (data === 'ON') {
+                        data = '<p style="color:green">' + data + '</p>'
+                    } else {
+                        data = '<p style="color:red">' + data + '</p>'
+                    }
+
+                    return data;
+                }
+            },
+            {
+                "data": "Edit", "render": function (data, type, full, meta) {
+                    // data = '<button class="btn btn-primary">Edit</button>';
+                    row=meta.row+1;
+                    data = '<a class="open-AddBookDialog btn edit-btn btn-info btn-md" data-toggle="modal" data-id="' + full.Arm + '" data-stream="' + full.Stream + '" data-port="'+full.Port+'" data-row="'+row+'" href="#exampleModal">' + 'Edit' + '</a>';
+                    data = data+ 
+                    `<button class="btn btn-danger" onclick=myFunc(${meta.row}) data-tag=${row}>Delete</button>`;
+                    return data;
+                },
+            }
             // { "data": "LineColourGroup",render:renderColour }
-		],
-		"columnDefs": [
-			{
-				targets: 0,
-				data: null,
-				defaultContent: '',
-				orderable: false,
-				className: 'select-checkbox text-center'
-			},
-			{ className: "text-center", "targets": [1] },
-			{ className: "text-center", "targets": [2] },
-			{ className: "text-center", "targets": [3] },
-            { className: "text-center", "targets": [4] }
-		],
-	});
+        ],
+        "columnDefs": [
+            {
+                targets: 0,
+                data: null,
+                defaultContent: '',
+                orderable: false,
+                className: 'select-checkbox text-center'
+            },
+            { className: "text-center", "targets": [1] },
+            { className: "text-center", "targets": [2] },
+            { className: "text-center", "targets": [3] },
+            { className: "text-center", "targets": [4] },
+            { className: "text-center", "targets": [5] }
+        ],
+    });
 
-    $("submit").click(function(){
-        
+    $("submit").click(function () {
         window.location = "/"
-    })
+    });
+
+
+
 
 
     // function renderData (data) {
@@ -88,4 +117,9 @@ $(document).ready(function() {
     // }
 
 
+    // $("#eventsdata").on("click", ".btn.btn-info.btn-md", function () {
+    //     $("#eventsdata").load("editbutton");
+    //     $("#myModal").modal('show');
+    // });
 });
+
