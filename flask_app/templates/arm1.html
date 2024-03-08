@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="../static/css/navTabsModified.css">
     <link rel="stylesheet" href="../static/jquery/jquery-ui.css">
 
-    <script src="../static/js/home.js"></script>
+    <!-- <script src="../static/js/home.js"></script> -->
+    <script src="../static/js/arm.js"></script>
 
     <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/jquery-confirm.min.css">
@@ -30,28 +31,11 @@
       src="../static/js/jquery.dataTables.js"></script>
 
     <link href="../static/css/select2.min.css" rel="stylesheet" />
-    <script src="h../static/js/select2.min.js"></script>
+    <script src="../static/js/select2.min.js"></script>
     <link rel="stylesheet" href="../static/css/select2-bootstrap.css">
 
 
     <style>
-      img {
-        display: block;
-        margin-right: auto;
-      }
-
-      /* .parent {
-        border: 1rem solid black;
-        margin: 1rem;
-        padding: 1rem 1rem;
-        text-align: center;
-      } */
-
-      .division {
-        display: inline-block;
-        border: 1px solid black;
-        padding: 1rem 1rem;
-      }
 
       td.highlight {
         background-color: whitesmoke !important;
@@ -66,22 +50,66 @@
         position: relative;
         padding: 10px 100px 10px 100px;
       }
-
+/* 
       .img {
         margin-left: auto;
         margin-right: auto;
         display: block;
-      }
+      } */
 
       .btn-primary {
         color: #fff;
         background-color: #253654;
         border-color: #2e6da4;
       }
+        #selectit {
+      height: 640px;
+      width: 640px;
+      background-color: transparent;
+      border: 1px solid black;
+      position: relative;
+  }
+/* 
+    #canvas {
+      width: 600px;
+    height: 600px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    } */
+
+    .top-row{
+      display: flex;
+      justify-content: space-between;
+      /* padding:0 20px; */
+      margin-top: 5vh;
+    }
+    .top1{
+      padding-top: 5.5vh;
+      flex:30;
+    }
+    .top2{
+      flex:30;
+      padding-top: 5.5vh;
+
+    }
+    .top3{
+      flex:40
+    }
+    #coordinateInfo{
+      margin:10px 0;
+    }
+
+
+
+
     </style>
+    <script>
+          dimensions = JSON.parse('{{ dimensions | safe }}');
+          line_dimensions = JSON.parse('{{ line_dimensions | safe }}');
 
 
-
+    </script>
   </head>
 
 <body>
@@ -95,7 +123,7 @@
       </b>
     </div>
   </div>
-  <div style="text-align:center;margin:0;width:100vw;margin-top: 30px;" class="row">
+  <div style="text-align:center;margin:0;width:100%;margin-top: 30px;" class="row">
 
 
     <div class="row">
@@ -108,15 +136,17 @@
     </div>
 
 
-    <div class="row">
-      <div class="col-md-4">
-        <p style="padding: 2px; border: 2px solid #253654"> How the Line Segment and Zone will look after filling
-          and submitting the given coordinates for zones and Line Segment</p>
+    <div class=" top-row">
+      <div class="top1">
+          <div>
+          How the Line Segment and Zone will look after filling
+          and submitting the given coordinates for zones and Line Segment
+        </div>
 
-        <img class="img" src="{{url_for('static',filename='image.png')}}" alt="ITSPE " width="80%" height="80%">
+        <img class="img" src="{{url_for('static',filename='image.png')}}" alt="ITSPE " style="width:70%;height: 70%; object-fit:cover">
       </div>
 
-      <div class="col-md-4">
+      <div class="top2">
         <form method="post" action="/arm1" enctype="multipart/form-data">
           <table class="table table-bordered fontOpenSansRegular">
             <tbody>
@@ -182,26 +212,51 @@
                   <input type="text" name="dis" class="form-control" id="dis" placeholder="Enter Distance">
                 </td>
               </tr>
-              <tr>
-                <td colspan="5" style="border: 0px solid;">
-                  <button class="btn btn-primary btn-block"
-                    style="position: absolute;left: 40%;right: 40%;width: 30%;border:1px" id="submit">
-                    <i class="fas fa-sign-in-alt btn-icon"></i>Submit
-                  </button>
-              </tr>
-              </td>
             </tbody>
           </table>
-          <br><br><br><br>
+
+          <tr>
+            <td style="border: 1px solid red; text-align: center; display:flex; justify-content: center; width:fit-content">
+              <button class="btn btn-primary btn-block" type="button" id="submit" onclick="getData()">
+                <i class="fas fa-sign-in-alt btn-icon"></i>Submit
+              </button>
+            </td>
+          </tr>
         </form>
       </div>
-
-      <div class="col-md-4">
+      <div class="top3">
         <h8 class="fontOpenSansBold" style="text-align:center; font-size: 15px">Live Streaming</h8>
-        <img src="{{ url_for('video_feed_1') }}" style="height: 100%; width:100%; position: relative;">
+        <p>Click inside the box to get coordinates</p>
+        <div class="coordinate-info" id="coordinateInfo">
+          <button id="drawPolygonButton">Draw Polygon</button>
+          <button id="drawLineButton">Draw Line</button>
+          <button id="clearButton">Clear Draw</button>
+          <button id="finishButton" style="display: none;">Finish Shape</button>
       </div>
 
+      <div style="display:flex; justify-content: center; align-items: center; position: relative;">
+        <img id="image" src="{{ url_for('video_feed_1') }}" style="height: 640px; width:640px;">
+        <canvas id="canvas" width="640" height="640" style=" border:1px solid red; position: absolute; top: 0; margin-right: 0.4%"></canvas>
+      </div>
+      
+      </div>
+
+
+ 
     </div>
+
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 30vh;">
+
+
+
+    
+
+      
+
+    </div>
+
+
 
 
     <nav class="navbar navbar-fixed-bottom" id="footer">
@@ -219,3 +274,4 @@
       </a>
     </nav>
 </body>
+</html>
