@@ -52,9 +52,8 @@ $(document).ready(function () {
                 "data": "Arm", "render": function (data, type, row, meta) {
                     if (type === 'display') {
                         arm = meta.row + 1;
-                        data = '<a href="arm' + arm + '" >' + "Link" + '</a>';
+                        data = '<a href="arm' + arm + '?Sno=' + arm + '">' + "Link" + '</a>';
                     }
-
                     return data;
                 }
             },
