@@ -1,11 +1,13 @@
 import os
 import urllib.request
-from flask import Flask, flash, request, redirect, url_for, render_template, Response
+from flask import Flask, flash, request, redirect, url_for, render_template, Response, jsonify  
+
 from werkzeug.utils import secure_filename
 import cv2
 import numpy as np
 from configparser import ConfigParser
 import socket
+import json 
 
 app = Flask(__name__)
 
@@ -45,11 +47,11 @@ for arm in arms:
     try:
         parser.add_section(armsp)
         print(armsp)
-        parser.set(armsp, 'line_segment_coordinates_1', '')
+        # parser.set(armsp, 'line_segment_coordinates_1', '')
         parser.set(armsp, 'distance_1', '')
         parser.set(armsp, 'status', '')
     except:
-        parser.set(armsp, 'line_segment_coordinates_1', '')
+        # parser.set(armsp, 'line_segment_coordinates_1', '')
         parser.set(armsp, 'distance_1', '')
         parser.set(armsp, 'status', '')
     try:
@@ -476,87 +478,82 @@ def video_feed_5():
         return redirect(request.url)
 
 
-
-@app.route('/arm1', methods=['POST'])
-def upload_cord_1():
-    global coordinates_1,lsv_1,configfile
-    num = 0
-    cdx = 'Coordinates_1_XY'
-    lcdx = 'Coordinates_1_LSXLSY'
-    cd,lcd,dis = get_coordinates(cdx,lcdx)
-    a,b,c = check_coordinates(cd,st_1,coordinates_1,form_data,lcd,lsv_1,ls_1,0,dis)
-    store_data(num,a,b,c)
-    return redirect(request.url)
-
-@app.route('/arm2', methods=['POST'])
-def upload_cord_2():
-    global coordinates_2,lsv_2,configfile
-    num = 1
-    cdx = 'Coordinates_2_XY'
-    lcdx = 'Coordinates_2_LSXLSY'
-    cd,lcd,dis = get_coordinates(cdx,lcdx)
-    a,b,c = check_coordinates(cd,st_2,coordinates_2,form_data,lcd,lsv_2,ls_2,num,dis)
-    store_data(num,a,b,c)
-    return redirect(request.url)
-
-@app.route('/arm3', methods=['POST'])
-def upload_cord_3():
-    global coordinates_3,lsv_3,configfile
-    num = 2
-    cdx = 'Coordinates_3_XY'
-    lcdx = 'Coordinates_3_LSXLSY'
-    cd,lcd,dis = get_coordinates(cdx,lcdx)
-    a,b,c = check_coordinates(cd,st_3,coordinates_3,form_data,lcd,lsv_3,ls_3,num,dis)
-    store_data(num,a,b,c)
-    return redirect(request.url)
-
-@app.route('/arm4', methods=['POST'])
-def upload_cord_4():
-    global coordinates_4,lsv_4,configfile
-    num = 3
-    cdx = 'Coordinates_4_XY'
-    lcdx = 'Coordinates_4_LSXLSY'
-    cd,lcd,dis = get_coordinates(cdx,lcdx)
-    a,b,c = check_coordinates(cd,st_4,coordinates_4,form_data,lcd,lsv_4,ls_4,num,dis)
-    store_data(num,a,b,c)
-    return redirect(request.url)
-
-@app.route('/arm5', methods=['POST'])
-def upload_cord_5():
-    global coordinates_5,lsv_5,configfile
-    num = 4
-    cdx = 'Coordinates_5_XY'
-    lcdx = 'Coordinates_5_LSXLSY'
-    cd,lcd,dis = get_coordinates(cdx,lcdx)
-    a,b,c = check_coordinates(cd,st_5,coordinates_5,form_data,lcd,lsv_5,ls_5,num,dis)
-    store_data(num,a,b,c)
-    return redirect(request.url)
-
 @app.route('/')
 def index():
     """Home page."""
     return render_template('index.html')
-    
 
-@app.route('/arm1')
-def arm1():
-    return render_template('arm1.html')
+ #below function is to fetch the dimensions that arr stored in config  
 
-@app.route('/arm2')
-def arm2():
-    return render_template('arm2.html')
+@app.route('/arm<int:arm_number>')
+def arm(arm_number):
+    # Get the dimensions and line dimensions based on the arm_number
+    if arm_number == 1:
+        dimensions = parser.get('J091_L01', 'zone_dimensions_1')
+        line_dimensions = parser.get('J091_L01_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 2:
+        dimensions = parser.get('J091_L02', 'zone_dimensions_1')
+        line_dimensions = parser.get('J091_L02_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 3:
+        dimensions = parser.get('J091_L03', 'zone_dimensions_1')
+        line_dimensions = parser.get('J091_L03_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 4:
+        dimensions = parser.get('J091_L04', 'zone_dimensions_1')
+        line_dimensions = parser.get('J091_L04_SPEED', 'line_segment_coordinates_1')
+    else:
+        # Handle invalid arm_number
+        return "Invalid arm_number", 400
 
-@app.route('/arm3')
-def arm3():
-    return render_template('arm3.html')
+    return render_template('arm{}.html'.format(arm_number), dimensions=json.dumps(dimensions), line_dimensions=json.dumps(line_dimensions))
 
-@app.route('/arm4')
-def arm4():
-    return render_template('arm4.html')
 
-@app.route('/arm5')
-def arm5():
-    return render_template('arm5.html')
+
+
+
+
+ #below function is to set the dimensions that are stored in config  
+
+@app.route('/update_config', methods=['POST'])
+def update_config():
+
+    # Get the new value from the request
+    data = request.json
+
+    # Extract data from the request
+    dimensions = data['dimension']
+    line_dimensions = data['line_dimensions']
+    camNumber = data['camNumber']
+
+    parser = config_read()
+
+    # Set configurations based on camNumber
+    if camNumber == '1':
+        parser.set('J091_L01', 'zone_dimensions_1', dimensions)
+        parser.set('J091_L01_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '2':
+        parser.set('J091_L02', 'zone_dimensions_1', dimensions)
+        parser.set('J091_L02_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '3':
+        parser.set('J091_L03', 'zone_dimensions_1', dimensions)
+        parser.set('J091_L03_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '4':
+        parser.set('J091_L04', 'zone_dimensions_1', dimensions)
+        parser.set('J091_L04_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    else:
+        # Handle invalid camNumber
+        return "Invalid camNumber: " + camNumber, 400
+
+    # Write updated configurations to the file
+    config_write(parser)
+
+    response = {
+        'dimensions': dimensions,
+        'line_dimensions': line_dimensions
+    }
+
+    return jsonify(response), 200
+
+
 
 @app.route('/test')
 def test():
@@ -580,6 +577,8 @@ def test1():
     else:
         return render_template('index.html')
 
+
+
 @app.route('/getJNdata',methods = ['POST','GET'])
 def JNdata():
     return ja
@@ -593,4 +592,4 @@ def delete():
 
 if __name__ == '__main__':
     # app.run(debug=True,host='localhost',port=80)
-    app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True,host='0.0.0.0',port=88)
