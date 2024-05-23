@@ -22,6 +22,9 @@ arms = parser.get('DEFAULT','ARM_IDS',fallback="")
 if arms != "":
     arms = arms.split(",")
 armslen = len(arms)
+print("Arms are", arms)
+print("Arms are", arms[0])
+
 stream = []
 ja = []
 armsp = ''
@@ -488,18 +491,18 @@ def index():
 @app.route('/arm<int:arm_number>')
 def arm(arm_number):
     # Get the dimensions and line dimensions based on the arm_number
-    if arm_number == 1:
-        dimensions = parser.get('J091_L01', 'zone_dimensions_1')
-        line_dimensions = parser.get('J091_L01_SPEED', 'line_segment_coordinates_1')
-    elif arm_number == 2:
-        dimensions = parser.get('J091_L02', 'zone_dimensions_1')
-        line_dimensions = parser.get('J091_L02_SPEED', 'line_segment_coordinates_1')
-    elif arm_number == 3:
-        dimensions = parser.get('J091_L03', 'zone_dimensions_1')
-        line_dimensions = parser.get('J091_L03_SPEED', 'line_segment_coordinates_1')
-    elif arm_number == 4:
-        dimensions = parser.get('J091_L04', 'zone_dimensions_1')
-        line_dimensions = parser.get('J091_L04_SPEED', 'line_segment_coordinates_1')
+    if arm_number == 1 and len(arms)>=arm_number:
+        dimensions = parser.get(arms[arm_number-1], 'zone_dimensions_1')
+        line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 2 and len(arms)>=arm_number:
+        dimensions = parser.get(arms[arm_number-1], 'zone_dimensions_1')
+        line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 3 and len(arms)>=arm_number:
+        dimensions = parser.get(arms[arm_number-1], 'zone_dimensions_1')
+        line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
+    elif arm_number == 4 and len(arms)>=arm_number:
+        dimensions = parser.get(arms[arm_number-1], 'zone_dimensions_1')
+        line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
     else:
         # Handle invalid arm_number
         return "Invalid arm_number", 400
@@ -527,18 +530,18 @@ def update_config():
     parser = config_read()
 
     # Set configurations based on camNumber
-    if camNumber == '1':
-        parser.set('J091_L01', 'zone_dimensions_1', dimensions)
-        parser.set('J091_L01_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '2':
-        parser.set('J091_L02', 'zone_dimensions_1', dimensions)
-        parser.set('J091_L02_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '3':
-        parser.set('J091_L03', 'zone_dimensions_1', dimensions)
-        parser.set('J091_L03_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '4':
-        parser.set('J091_L04', 'zone_dimensions_1', dimensions)
-        parser.set('J091_L04_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    if camNumber == '1' and len(arm_number)>=int(camNumber):
+        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '2' and len(arm_number)>=int(camNumber):
+        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '3' and len(arm_number)>=int(camNumber):
+        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == '4' and len(arm_number)>=int(camNumber):
+        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
     else:
         # Handle invalid camNumber
         return "Invalid camNumber: " + camNumber, 400
