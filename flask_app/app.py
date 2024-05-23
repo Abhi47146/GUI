@@ -22,8 +22,7 @@ arms = parser.get('DEFAULT','ARM_IDS',fallback="")
 if arms != "":
     arms = arms.split(",")
 armslen = len(arms)
-print("Arms are", arms)
-print("Arms are", arms[0])
+
 
 stream = []
 ja = []
@@ -211,6 +210,7 @@ def addcamera(scn,stream,port):
     arm_ids = parser.get('DEFAULT','ARM_IDS')
     if("," in arm_ids):
         arm_ids = arm_ids + "," + scn
+    else: arm_ids=scn
     parser = add_section(parser,scn,stream)
     parser.set('DEFAULT','arm_ids',arm_ids)
     if(parser.get('DEFAULT','LPU_PORT')!=port):
@@ -320,7 +320,10 @@ def change_armid_fields(cscn,pscn,parser):
 def changeconfig(scn,stream,num,port):
     parser = config_read()
     pscnl = parser.get('DEFAULT','ARM_IDS')
-    pscn = list(pscnl.split(","))[num]
+    pscn_list = list(pscnl.split(","))
+    pscn=''
+    if(len(pscn_list)>num): pscn=pscn_list[num]
+    else: return
     if len(scn)>=8 and len(scn)<=9:
         check_scn(scn,pscn,parser,num) # Will change SCN here
     if stream!='':
@@ -491,6 +494,7 @@ def index():
 @app.route('/arm<int:arm_number>')
 def arm(arm_number):
     # Get the dimensions and line dimensions based on the arm_number
+    print("arm number is", arm_number, "and arm is", arms)
     if arm_number == 1 and len(arms)>=arm_number:
         dimensions = parser.get(arms[arm_number-1], 'zone_dimensions_1')
         line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
@@ -505,7 +509,7 @@ def arm(arm_number):
         line_dimensions = parser.get(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1')
     else:
         # Handle invalid arm_number
-        return "Invalid arm_number", 400
+        return "Invalid arm_number while fetching the dimensions", 400
 
     return render_template('arm{}.html'.format(arm_number), dimensions=json.dumps(dimensions), line_dimensions=json.dumps(line_dimensions))
 
