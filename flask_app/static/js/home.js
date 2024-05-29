@@ -24,6 +24,7 @@ $(document).ready(function () {
         "bPaginate": false,
         "bFilter": false,
         "bInfo": false,
+        "ordering": false,  // Disable sorting for all columns
         "ajax": {
 
             // 'dataType': "jsonp",

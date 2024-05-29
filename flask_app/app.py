@@ -192,7 +192,6 @@ def check_scn(cscn,pscn,parser,num):
     temp = list(cscn.split("_"))
     scn = temp[0]
     if scn==parser.get('DEFAULT','JUNCTION_SCN'):
-        print("Why this")
         if(cscn!=pscn):
             change_amrid(cscn,pscn,parser)
             ja[num]['Arm'] = cscn
@@ -323,9 +322,9 @@ def changeconfig(scn,stream,num,port):
     pscn_list = list(pscnl.split(","))
     pscn=''
     if(len(pscn_list)>num): pscn=pscn_list[num]
-    else: return
-    if len(scn)>=8 and len(scn)<=9:
-        check_scn(scn,pscn,parser,num) # Will change SCN here
+    else: return "Wrong Arm"
+    #if len(scn)>=8 and len(scn)<=9:
+    check_scn(scn,pscn,parser,num) # Will change SCN here
     if stream!='':
         try:
             camera = cv2.VideoCapture(stream)
@@ -493,6 +492,11 @@ def index():
 
 @app.route('/arm<int:arm_number>')
 def arm(arm_number):
+    configfile = "configfile.ini"
+    parser.read(configfile)
+    arms = parser.get('DEFAULT','ARM_IDS',fallback="")
+    if arms != "":
+        arms = arms.split(",")
     # Get the dimensions and line dimensions based on the arm_number
     print("arm number is", arm_number, "and arm is", arms)
     if arm_number == 1 and len(arms)>=arm_number:
@@ -525,30 +529,30 @@ def update_config():
 
     # Get the new value from the request
     data = request.json
-
+    print(data)
     # Extract data from the request
     dimensions = data['dimension']
     line_dimensions = data['line_dimensions']
-    camNumber = data['camNumber']
-
+    camNumber = int(data['camNumber'])
+     
     parser = config_read()
 
     # Set configurations based on camNumber
-    if camNumber == '1' and len(arm_number)>=int(camNumber):
-        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
-        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '2' and len(arm_number)>=int(camNumber):
-        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
-        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '3' and len(arm_number)>=int(camNumber):
-        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
-        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
-    elif camNumber == '4' and len(arm_number)>=int(camNumber):
-        parser.set(arms[arm_number-1], 'zone_dimensions_1', dimensions)
-        parser.set(arms[arm_number-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    if camNumber == 1 and len(arms)>=camNumber:
+        parser.set(arms[camNumber-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[camNumber-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == 2 and len(arms)>=camNumber:
+        parser.set(arms[camNumber-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[camNumber-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == 3 and len(arms)>=camNumber:
+        parser.set(arms[camNumber-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[camNumber-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
+    elif camNumber == 4 and len(arms)>=camNumber:
+        parser.set(arms[camNumber-1], 'zone_dimensions_1', dimensions)
+        parser.set(arms[camNumber-1]+'_SPEED', 'line_segment_coordinates_1', line_dimensions)
     else:
         # Handle invalid camNumber
-        return "Invalid camNumber: " + camNumber, 400
+        return "Invalid camNumber: " + str(camNumber), 400
 
     # Write updated configurations to the file
     config_write(parser)
