@@ -78,7 +78,7 @@ submitButton.addEventListener('click', function() {
     // const line_segment=[427, 459,126, 442];
   if(zone_dimensions_1){
     for (let i = 0; i < zone_dimensions_1.length; i += 2) {
-        points.push({ x: parseInt(zone_dimensions_1[i]), y: parseInt(zone_dimensions_1[i + 1]) });
+        points.push({ x: (zone_dimensions_1[i]*640)/2560.0, y: (zone_dimensions_1[i + 1]*640)/1440.0 });
     }
     // isEditing = true;
     document.getElementById('drawPolygonButton').classList.add('active');
@@ -89,7 +89,7 @@ submitButton.addEventListener('click', function() {
   }
   if(line_segment){
     for (let i = 0; i < line_segment.length; i += 2) {
-        line_points.push({ x: parseInt(line_segment[i]), y: parseInt(line_segment[i + 1])});
+        line_points.push({ x: (line_segment[i]*640)/2560.0, y: (line_segment[i + 1]*640)/1440.0});
     }
     // isLineEditing = true;
     document.getElementById('drawPolygonButton').classList.remove('active');
@@ -174,7 +174,9 @@ submitButton.addEventListener('click', function() {
           points.forEach((point, index) => {
               const inputVal = document.getElementById(`Coordinates_1_XY${index + 1}`);
               if (inputVal) {
-                  inputVal.value = `${point.x}, ${point.y}`;
+                  var X_coord = (point.x * 2560) / 640.0;
+                  var Y_coord = (point.y * 1440) / 640.0;                
+                  inputVal.value = `${X_coord}, ${Y_coord}`;
               }
           });
         }
@@ -182,7 +184,9 @@ submitButton.addEventListener('click', function() {
           line_points.forEach((point, index) => {
               const inputVal = document.getElementById(`Coordinates_1_LSXLSY${index + 1}`);
               if (inputVal) {
-                  inputVal.value = `${point.x}, ${point.y}`;
+                var X_coord = (point.x * 2560) / 640.0;
+                var Y_coord = (point.y * 1440) / 640.0;  
+                inputVal.value = `${X_coord}, ${Y_coord}`;
               }
           });
         }
@@ -356,6 +360,7 @@ canvas.addEventListener('mouseup', function () {
 });
 
 function getData() {
+
   var data = '';
   for (var i = 1; i <= 4; i++) {
     var input = document.getElementById("Coordinates_" + 1 + "_XY" + i);
