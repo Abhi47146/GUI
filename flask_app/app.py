@@ -1,15 +1,46 @@
+import warnings
+
+# Suppress DeprecationWarnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+# Built-in modules (always available)
 import os
 import urllib.request
-from flask import Flask, flash, request, redirect, url_for, render_template, Response, jsonify  
-
-from werkzeug.utils import secure_filename
-import cv2
-import numpy as np
-from configparser import ConfigParser
 import socket
-import json 
+import json
+import configparser  # Built-in, no need to check
 
-app = Flask(__name__)
+# Safe import function (returns module if available, else None)
+def safe_import(module_name):
+    try:
+        return __import__(module_name)
+    except ImportError:
+        return None
+
+# Import third-party modules safely
+flask = safe_import("flask")
+werkzeug = safe_import("werkzeug")
+cv2 = safe_import("cv2")
+np = safe_import("numpy")
+
+# Flask components (avoid breaking your code)
+if flask:
+    from flask import Flask, flash, request, redirect, url_for, render_template, Response, jsonify  
+    app = Flask(__name__)  # Initialize Flask app
+else:
+    print("Flask is not installed. The app cannot run.")
+
+if werkzeug:
+    from werkzeug.utils import secure_filename
+
+if configparser:
+    from configparser import ConfigParser
+
+# Print versions safely
+print("Flask:", flask.__version__ if flask else "Not Installed")
+print("Werkzeug:", werkzeug.__version__ if werkzeug else "Not Installed")
+print("OpenCV:", cv2.__version__ if cv2 else "Not Installed")
+print("NumPy:", np.__version__ if np else "Not Installed")
 
 hostname = socket.gethostname()
 ipadd = socket.gethostbyname(hostname)
