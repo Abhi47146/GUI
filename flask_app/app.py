@@ -20,7 +20,7 @@ def safe_import(module_name):
 
 # Import third-party modules safely
 flask = safe_import("flask")
-werkzeug = safe_import("werkzeug")
+#werkzeug = safe_import("werkzeug")
 cv2 = safe_import("cv2")
 np = safe_import("numpy")
 
