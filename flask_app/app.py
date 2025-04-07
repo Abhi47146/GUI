@@ -10,6 +10,7 @@ import socket
 import json
 import configparser  # Built-in, no need to check
 
+
 # Safe import function (returns module if available, else None)
 def safe_import(module_name):
     try:
@@ -25,7 +26,7 @@ np = safe_import("numpy")
 
 # Flask components (avoid breaking your code)
 if flask:
-    from flask import Flask, flash, request, redirect, url_for, render_template, Response, jsonify  
+    from flask import Flask, flash, request, redirect, url_for, render_template, Response, jsonify , send_file,render_template_string
     app = Flask(__name__)  # Initialize Flask app
 else:
     print("Flask is not installed. The app cannot run.")
@@ -631,6 +632,48 @@ def delete():
         jsonData = request.get_json()
         deleterow(jsonData['row'])
     return render_template('index.html')
+
+@app.route("/download", methods=["GET"])
+def download_video():
+    VIDEO_PATH = parser.get('Video_Debug','path')
+    #VIDEO_PATH='/home/sudhanshutiwari/Videos/test1.mp4'
+    return send_file(VIDEO_PATH, as_attachment=True, download_name="downloaded_video.mp4")
+
+
+
+@app.route('/video_feed')
+def video_feed():
+    """Stream the video file directly"""
+    VIDEO_PATH = parser.get('Download_Video','path')
+    #VIDEO_PATH = "/home/itspe/Documents/nayanam-v2/nayanam_v3/fixed_output.mp4"
+    def generate():
+        with open(VIDEO_PATH, "rb") as video_file:
+            chunk_size = 1024
+            while chunk := video_file.read(chunk_size):
+                yield chunk
+
+    return Response(generate(), mimetype='video/mp4')
+
+@app.route('/watch')
+def watch_video():
+    """API to serve an HTML page with the video player"""
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Video Stream</title>
+    </head>
+    <body>
+        <h2>Live Video Stream</h2>
+        <video width="640" height="640" controls autoplay>
+            <source src="/video_feed" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </body>
+    </html>
+    """
+    return render_template_string(html)
+
 
 if __name__ == '__main__':
     # app.run(debug=True,host='localhost',port=80)
