@@ -4,8 +4,6 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Built-in modules (always available)
-import os
-import urllib.request
 import socket
 import json
 import configparser  # Built-in, no need to check
@@ -31,15 +29,15 @@ if flask:
 else:
     print("Flask is not installed. The app cannot run.")
 
-if werkzeug:
-    from werkzeug.utils import secure_filename
+# if werkzeug:
+#     from werkzeug.utils import secure_filename
 
 if configparser:
     from configparser import ConfigParser
 
 # Print versions safely
 print("Flask:", flask.__version__ if flask else "Not Installed")
-print("Werkzeug:", werkzeug.__version__ if werkzeug else "Not Installed")
+#print("Werkzeug:", werkzeug.__version__ if werkzeug else "Not Installed")
 print("OpenCV:", cv2.__version__ if cv2 else "Not Installed")
 print("NumPy:", np.__version__ if np else "Not Installed")
 
