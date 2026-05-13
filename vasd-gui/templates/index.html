@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Dashboard</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            height: 60px;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+
+        .filter-box {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .overspeed {
+            background-color: #ffe6e6;
+        }
+
+        img.thumb {
+            width: 80px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #modal {
+            position: fixed;
+            top: 20%;
+            left: 35%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        #modal img {
+            width: 400px;
+        }
+
+        #modal button {
+            margin-top: 10px;
+            background: red;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .header h2 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+        }
+        
+        .filter-box input, .filter-box select {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            height: 38px;              
+            width: 180px;              
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .filter-actions {
+            margin-left: auto;  
+            display: flex;
+            gap: 10px;
+        }
+        .filter-actions button {
+            background: #2ecc71;
+        }
+
+        .filter-actions button:last-child {
+            background: #e74c3c;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
+    <h2>Vehicle Monitoring Dashboard</h2>
+</div>
+
+<div class="card">
+
+    <div class="filter-box">
+        <input type="text" id="nameFilter" placeholder="Name (SCN)">
+        <input type="text" id="fromTime" placeholder="From Time">
+        <input type="text" id="toTime" placeholder="To Time">
+        <select id="vehicleClass">
+           <option value="">All Vehicles</option>
+           <option value="Bike">Bike</option>
+           <option value="MotorBike">MotorBike</option>
+           <option value="Car">Car</option>
+           <option value="Transporter">Transporter</option>
+           <option value="Short Truck">Short Truck</option>
+           <option value="Long Truck">Long Truck</option>
+        </select>
+        <div class="filter-actions">
+        <button onclick="loadFiltered()">Filter</button>
+        <button onclick="resetFilters()">Reset</button>
+        </div>
+    </div>
+
+    <table border="1" width="100%">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Name</th>
+            <th>Lane</th>
+            <th>Recorded Speed (km/h)</th>
+            <th>Min Speed Limit (km/h)</th>
+            <th>Max Speed Limit (km/h)</th>
+            <th>Vehicle Class</th>
+            <th>Violation Type</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+</div>
+
+<div id="modal">
+    <img id="img">
+    <br>
+    <button onclick="closeImg()">Close</button>
+</div>
+
+<script>
+flatpickr("#fromTime", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i:S",
+    time_24hr: true
+});
+
+flatpickr("#toTime", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i:S",
+    time_24hr: true
+});
+
+let allData = [];
+let currentPage = 1;
+let pageSize = 10;
+let isFiltered = false;
+
+// Load data
+async function loadData() {
+    const res = await fetch('http://127.0.0.1:8000/api/data');
+    const data = await res.json();
+
+    allData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    renderTable();
+}
+
+function renderTable() {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+
+    const pageData = allData.slice(start, end);
+
+    pageData.forEach(d => {
+        const row = `
+            <tr class="${d.violation === 'Over Speed' ? 'overspeed' : ''}">
+                <td>${d.timestamp}</td>
+                <td>${d.name}</td>
+                <td>${d.lane}</td>
+                <td>${d.speed}</td>
+                <td>${d.min_speed}</td>
+                <td>${d.max_speed}</td>
+                <td>${d.vehicle_class}</td>
+                <td>${d.violation}</td>
+                <td>
+                    ${d.image && d.image !== "" ? `<button onclick="showImg('http://127.0.0.1:8000${d.image}')">View Image</button>`: "No Image"}
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+
+    document.getElementById("pageInfo").innerText =
+        `Page ${currentPage} of ${Math.ceil(allData.length / pageSize)}`;
+}
+
+function nextPage() {
+    if (currentPage * pageSize < allData.length) {
+        currentPage++;
+        renderTable();
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+    }
+}
+
+function changePageSize() {
+    pageSize = parseInt(document.getElementById("pageSize").value);
+    currentPage = 1;
+    renderTable();
+}
+
+// Filter
+async function loadFiltered() {
+    let from = document.getElementById("fromTime").value;
+    let to = document.getElementById("toTime").value;
+    let vehicleClass = document.getElementById("vehicleClass").value;
+    let name = document.getElementById("nameFilter").value;
+
+    let url = "http://127.0.0.1:8000/api/data?";
+
+    if (from && to) {
+        url += `from=${from}&to=${to}&`;
+    }
+
+    if (vehicleClass) {
+        url += `vehicle_class=${vehicleClass}&`;
+    }
+
+    if (name) {
+        url += `name=${name}`;
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    allData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    currentPage = 1;
+    renderTable();
+
+    isFiltered = true; 
+}
+
+function resetFilters() {
+    document.getElementById("fromTime").value = "";
+    document.getElementById("toTime").value = "";
+    document.getElementById("vehicleClass").value = "";
+    document.getElementById("nameFilter").value = "";
+
+    isFiltered = false;   
+    loadData();
+}
+
+setInterval(() => {
+    if (!isFiltered) {
+        loadData();
+    }
+}, 3000);
+loadData();
+
+function showImg(src) {
+    document.getElementById("img").src = src;
+    document.getElementById("modal").style.display = "block";
+}
+
+function closeImg() {
+    document.getElementById("modal").style.display = "none";
+}
+
+</script>
+
+</body>
+<div style="margin-top:10px;">
+    Show 
+    <select id="pageSize" onchange="changePageSize()">
+        <option value="10" selected>10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+
+    entries
+
+    <button onclick="prevPage()">⬅ Prev</button>
+    <span id="pageInfo">Page 1</span>
+    <button onclick="nextPage()">Next ➡</button>
+</div>
+
+</html>

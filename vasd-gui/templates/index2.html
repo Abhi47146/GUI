@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='shortcut icon' type='image/x-icon' href='../static/logo.jpg' />
+    <title>Vehicle Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        .logo {
+            width: 120px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        #modal {
+            position: fixed;
+            top: 20%;
+            left: 35%;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .filter-box {
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
+
+<button onclick="loadData()">Refresh Data</button>
+<!-- FILTER SECTION -->
+<div class="filter-box">
+    <label>From:</label>
+    <input type="datetime-local" id="fromTime">
+
+    <label>To:</label>
+    <input type="datetime-local" id="toTime">
+
+    <button onclick="loadFilteredWrapper()">Filter</button>
+    <button onclick="loadData()">Reset</button>
+</div>
+
+<table border="1" width="100%">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Name</th>
+            <th>Lane</th>
+            <th>Recorded Speed(km/h)</th>
+            <th>Min Speed Limit(km/h)</th>
+            <th>Max Speed Limit(km/h)</th>
+            <th>Vehicle Class</th>
+            <th>Violation Type</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<!-- IMAGE MODAL -->
+<div id="modal" style="display:none;">
+    <img id="img" width="400">
+    <br><br>
+    <button onclick="closeImg()">Close</button>
+</div>
+
+<script>
+
+async function loadData() {
+    const res = await fetch('http://127.0.0.1:8000/api/data');
+    const data = await res.json();
+
+    renderTable(data);
+}
+
+async function loadFiltered() {
+    let from = document.getElementById("fromTime").value;
+    let to = document.getElementById("toTime").value;
+
+    if (!from || !to) {
+        alert("Please select both From and To time");
+        return;
+    }
+
+    // convert format
+    from = from.replace("T", " ") + ":00";
+    to = to.replace("T", " ") + ":00";
+
+    const res = await fetch(`/api/data?from=${from}&to=${to}`);
+    const data = await res.json();
+
+    renderTable(data);
+}
+
+function renderTable(data) {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    data.forEach(d => {
+        const row = `
+            <tr style="${d.violation === 'Over Speed' ? 'background-color:#ffcccc;' : ''}">
+                <td>${d.timestamp}</td>
+                <td>${d.name}</td>
+                <td>${d.lane}</td>
+                <td>${d.speed}</td>
+                <td>${d.min_speed}</td>
+                <td>${d.max_speed}</td>
+                <td>${d.vehicle_class}</td>
+                <td>${d.violation}</td>
+                <td>${d.image && d.image !== "" ? `<button onclick="showImg('http://127.0.0.1:8000${d.image}')">View Image</button>`: "No Image"}
+                </td>
+                
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function showImg(src) {
+    document.getElementById("img").src = src;
+    document.getElementById("modal").style.display = "block";
+}
+
+function closeImg() {
+    document.getElementById("modal").style.display = "none";
+}
+
+// auto refresh (only when NOT filtering)
+let autoRefresh = setInterval(loadData, 2000);
+
+
+// stop auto refresh when filtering
+function loadFilteredWrapper() {
+    clearInterval(autoRefresh);
+    loadFiltered();
+}
+
+loadData();
+</script>
+
+</body>
+</html>
