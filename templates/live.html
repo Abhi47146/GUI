@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#df7412",
+                    "secondary": "#bcc7de",
+                    "tertiary-fixed": "#ffdcc6",
+                    "on-primary-container": "#00285d",
+                    "inverse-primary": "#005ac2",
+                    "secondary-fixed-dim": "#bcc7de",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#233143",
+                    "on-primary-fixed": "#001a42",
+                    "on-secondary-fixed-variant": "#3c475a",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "surface": "#051424",
+                    "inverse-surface": "#d4e4fa",
+                    "surface-tint": "#adc6ff",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary": "#502400",
+                    "on-secondary": "#263143",
+                    "surface-container-lowest": "#010f1f",
+                    "on-tertiary-fixed": "#311400",
+                    "on-secondary-container": "#aeb9d0",
+                    "primary-container": "#4d8eff",
+                    "surface-variant": "#273647",
+                    "on-background": "#d4e4fa",
+                    "surface-dim": "#051424",
+                    "secondary-container": "#3e495d",
+                    "surface-container-high": "#1c2b3c",
+                    "primary-fixed": "#d8e2ff",
+                    "error": "#ffb4ab",
+                    "outline": "#8c909f",
+                    "on-secondary-fixed": "#111c2d",
+                    "surface-container": "#122131",
+                    "on-tertiary-container": "#461f00",
+                    "on-primary": "#002e6a",
+                    "primary": "#adc6ff",
+                    "background": "#051424",
+                    "error-container": "#93000a",
+                    "outline-variant": "#424754",
+                    "on-surface": "#d4e4fa",
+                    "surface-container-highest": "#273647",
+                    "secondary-fixed": "#d8e3fb",
+                    "surface-bright": "#2c3a4c",
+                    "tertiary": "#ffb786",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-container-low": "#0d1c2d",
+                    "on-surface-variant": "#c2c6d6",
+                    "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sidebar-width": "240px",
+                    "gutter": "1rem",
+                    "table-cell-padding": "0.75rem 1rem",
+                    "container-padding": "1.5rem",
+                    "card-gap": "1rem"
+            },
+            "fontFamily": {
+                    "h2": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "tabular-nums": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h1": ["Inter"]
+            },
+            "fontSize": {
+                    "h2": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}],
+                    "tabular-nums": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+</script>
+
+<title>Live View</title>
+
+<style>
+body {
+    background-color: #051424;
+    color: #d4e4fa;
+}
+.logo {
+    height: 60px;
+    position: absolute;
+    top: 0;
+    right: 5px;
+}
+</style>
+</head>
+
+<body class="font-sans">
+
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col h-full py-4">
+<div class="text-white font-bold px-4 py-6 border-b border-[#1f2937] font-h2">
+            SYSTEM CONTROL
+</div>
+
+<nav class="mt-6 flex-1">
+<div class="space-y-2"><a href="/home" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer">
+<span class="material-symbols-outlined">database</span>
+                ANPR Feed</a>
+        <div class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 cursor-pointer font-inter text-[13px] font-medium tracking-wide">
+    <span class="material-symbols-outlined">videocam</span>
+    Live View</div>
+    </div>
+</nav>
+<div class="mt-auto border-t border-[#1f2937] pt-4">
+<div onclick="logout()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 transition-all cursor-pointer font-inter text-[13px] font-medium tracking-wide">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </div>
+</div>
+</aside>
+
+
+<!-- Main -->
+<div class="ml-[220px] p-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6"><h1 class="text-xl font-semibold">Live View</h1></div>
+    <div class="header">
+    <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
+</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">{% for s in streams %}
+        <div onclick="openCamera('{{s}}')"
+             class="cursor-pointer bg-[#121826] border border-[#1f2937] rounded-xl overflow-hidden 
+                    hover:border-blue-500 hover:shadow-lg transition-all duration-200">
+
+            <div class="p-3 text-sm text-gray-300 flex justify-between items-center"><span>{{s}}</span>
+                <span class="flex items-center gap-1 text-green-400 text-xs"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>LIVE</span>
+            </div>
+
+            <img src="/static/{{s}}.jpg"onerror="this.src='/static/default.jpg'"class="w-full h-[200px] object-cover">
+
+        </div>{% endfor %}
+    </div>
+
+</div>
+
+<script>
+
+function openCamera(cam) {
+    window.location.href = `/view1/${cam}`;
+}
+function logout() {
+    window.location.href = "/logout";
+}
+</script>
+
+</body>
+</html>
