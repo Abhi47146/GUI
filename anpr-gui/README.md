@@ -1,2 +1,2 @@
 # anpr-gui
-Graphical user interface for Nayanam for traffic vehicle detector configurations.
+Graphical user interface for iphalakam for vehicle no plate detector configurations.
