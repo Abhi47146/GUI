@@ -1,2 +1,2 @@
-# vision-gui
-GUI for vision products.
+# anpr-gui
+Graphical user interface for Nayanam for traffic vehicle detector configurations.
