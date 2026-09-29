@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Camera Management</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+    <style>
+        body { background-color: #051424; color: #d4e4fa; min-height: 100vh; font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #051424; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        
+        .camera-table { width: 100%; border-collapse: collapse; background: #122131; border: 1px solid #1f2937; }
+        .camera-table thead th { background-color: #1c2b3c !important; color: #ffffff !important; border: 1px solid #273647 !important; text-align: center !important; padding: 12px !important; font-weight: 600; font-size: 13px; }
+        .camera-table tbody td { background-color: #122131 !important; color: #d4e4fa !important; border: 1px solid #1f2937 !important; text-align: center !important; vertical-align: middle !important; padding: 10px 12px !important; font-size: 13px; }
+    </style>
+</head>
+<body class="font-body-md overflow-x-hidden flex">
+
+    <!-- Left Navigation Sidebar -->
+    <aside class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col h-full py-4">
+        <div class="text-white font-bold px-4 py-6 border-b border-[#1f2937] font-h2">
+            SYSTEM CONTROL
+        </div>
+        <nav class="mt-6 flex-1">
+            <div class="space-y-2">
+                <a href="/home" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
+                    <span class="material-symbols-outlined">database</span>ANPR Feed
+                </a>
+                <a href="/camera-management" class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 text-[13px] font-medium tracking-wide">
+                    <span class="material-symbols-outlined">linked_camera</span>Camera Management
+                </a>
+                <a href="/view1" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
+                    <span class="material-symbols-outlined">videocam</span>Live View
+                </a>
+            </div>
+        </nav>
+        <div class="mt-auto border-t border-[#1f2937] pt-4">
+            <a href="/logout" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
+                <span class="material-symbols-outlined">logout</span>Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="ml-[210px] flex-1 min-h-screen bg-[#051424] p-8">
+        <div class="w-full bg-[#122131] border border-[#1f2937] text-white flex items-center justify-between px-6 py-3 rounded-lg mb-6">
+            <h1 class="text-2xl font-bold tracking-wider text-center flex-1 pr-10">CAMERAS</h1>
+        </div>
+
+        <div class="flex justify-end mb-4">
+            <button type="button" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">add</span> Add Camera
+            </button>
+        </div>
+
+        <div class="bg-[#122131] border border-[#1f2937] rounded-lg p-4">
+        <table class="camera-table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">SCN</th>
+                    <th style="width: 10%;">Link</th>
+                    <th style="width: 45%;">STREAM LINK</th>
+                    <th style="width: 10%;">Status</th>
+                    <th style="width: 10%;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="alert_body">
+                {% if not streams %}
+                <tr>
+                    <td colspan="5" class="text-center text-slate-400 py-6">No Cameras Configured</td>
+                </tr>
+                {% else %}
+                    {% for stream in streams %}
+                    <tr>
+                        <td class="font-mono text-sm">{{ stream.scn }}</td>
+                        <td>
+                            <a href="{{ url_for('camera_setup', scn=stream.scn) }}" class="text-blue-400 hover:underline font-medium">Link</a>
+                        </td>
+                        <td class="text-left font-mono text-xs text-slate-300 break-all">{{ stream.url }}</td>
+                        <td>
+                            {% if stream.is_online %}
+                                <span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">ON</span>
+                            {% else %}
+                                <span class="text-red-400 font-bold text-xs bg-red-500/10 px-2 py-1 rounded border border-red-500/20">OFF</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="bg-[#1c2b3c] hover:bg-slate-700 text-white text-xs px-3 py-1 rounded border border-slate-600 transition" 
+                                        onclick="openEditModal('{{ stream.scn }}', '{{ stream.url }}', '{{ stream.third_party_ip }}', '{{ stream.third_party_port }}')">
+                                    Edit
+                                </button>
+                                <button class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded transition" onclick="deleteCamera('{{ stream.scn }}')">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    </main>
+
+    <!-- Modal: Add Camera -->
+    <div id="addCameraModal" class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-[#122131] border border-[#1f2937] rounded-lg w-full max-w-md p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center pb-4 border-b border-[#1f2937]">
+                <h3 class="text-lg font-semibold text-white">Camera Details</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <form action="{{ url_for('add_camera') }}" method="post" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">SCN</label>
+                    <input type="text" name="scn" placeholder="e.g. J007_L02_01_X" required class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Stream Link</label>
+                    <input type="text" name="stream" placeholder="rtsp://..." required class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Third Party IP</label>
+                    <input type="text" name="third_party_ip" placeholder="0.0.0.0" class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Third Party Port</label>
+                    <input type="text" name="third_party_port" placeholder="1233" class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-[#1f2937]">
+                    <button type="button" onclick="closeAddModal()" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-4 py-2 rounded">Close</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Camera -->
+    <div id="editCameraModal" class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-[#122131] border border-[#1f2937] rounded-lg w-full max-w-md p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center pb-4 border-b border-[#1f2937]">
+                <h3 class="text-lg font-semibold text-white">Edit Details</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <form action="{{ url_for('edit_camera') }}" method="post" class="mt-4 space-y-4">
+                <input type="hidden" id="edit_old_scn" name="old_scn">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">SCN</label>
+                    <input type="text" id="edit_scn" name="scn" required class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Stream Link</label>
+                    <input type="text" id="edit_stream" name="stream" required class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Third Party IP</label>
+                    <input type="text" id="edit_ip" name="third_party_ip" class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Third Party Port</label>
+                    <input type="text" id="edit_port" name="third_party_port" class="w-full bg-[#051424] border border-[#1f2937] rounded px-3 py-2 text-white text-sm">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-[#1f2937]">
+                    <button type="button" onclick="closeEditModal()" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-4 py-2 rounded">Close</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddModal() { document.getElementById('addCameraModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('addCameraModal').classList.add('hidden'); }
+
+        function openEditModal(scn, stream, ip, port) {
+            document.getElementById('edit_old_scn').value = scn;
+            document.getElementById('edit_scn').value = scn;
+            document.getElementById('edit_stream').value = stream;
+            document.getElementById('edit_ip').value = ip;
+            document.getElementById('edit_port').value = port;
+            document.getElementById('editCameraModal').classList.remove('hidden');
+        }
+        function closeEditModal() { document.getElementById('editCameraModal').classList.add('hidden'); }
+
+        function deleteCamera(scn) {
+            if (confirm('Are you sure you want to delete camera ' + scn + '?')) {
+                fetch('/delete', {
+                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    body: JSON.stringify({ 'scn': scn })
+                }).then(res => res.ok ? location.reload() : alert('Failed to delete.'));
+            }
+        }
+    </script>
+</body>
+</html>

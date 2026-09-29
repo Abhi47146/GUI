@@ -3,11 +3,13 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Anpr Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}" />
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script id="tailwind-config">
       tailwind.config = {
@@ -117,7 +119,7 @@
       min-height: max(884px, 100dvh);
     }
 </style>
-  </head>
+</head>
 <body class="font-body-md overflow-hidden">
 <!-- Navigation Drawer -->
 <aside class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col h-full py-4">
@@ -126,16 +128,20 @@
 </div>
 
 <nav class="mt-6 flex-1">
-<div class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 cursor-pointer font-inter text-[13px] font-medium tracking-wide">
-<span class="material-symbols-outlined">database</span>
-                ANPR Feed
-            </div>
-<div onclick="live()" 
-     class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer">
+  <div class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 cursor-pointer font-inter text-[13px] font-medium tracking-wide">
+    <span class="material-symbols-outlined">database</span>
+    ANPR Feed
+  </div>
+  <a href="/camera-management"
+    class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
+    <span class="material-symbols-outlined">linked_camera</span>Camera Management
+  </a>
+  <div onclick="live()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
     <span class="material-symbols-outlined">videocam</span>
     Live View
-</div>
+  </div>
 </nav>
+
 <div class="mt-auto border-t border-[#1f2937] pt-4">
 <div onclick="logout()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 transition-all cursor-pointer font-inter text-[13px] font-medium tracking-wide">
 <span class="material-symbols-outlined">logout</span>
@@ -171,8 +177,7 @@
 <!-- Plate -->
 <div>
 <label class="text-xs text-gray-400 mb-1 block">REGISTRATION NUMBER</label>
-<input id="plateInput"
-class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+<input id="plateInput" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
 placeholder="Enter regist..." />
 </div>
 
@@ -189,38 +194,28 @@ placeholder="Enter lane..." />
 <!-- Camera -->
 <div>
 <label class="text-xs text-gray-400 mb-1 block">CAMERA</label>
-<select id="cameraSelect"
-class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2">
-<option value="">All Cameras</option>
-{% for s in streams %}
-<option value="{{s}}">{{s}}</option>
-{% endfor %}
+<select id="cameraSelect" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2">
+<option value="">All Cameras</option>{% for s in streams %} <option value="{{s}}">{{s}}</option>{% endfor %}
 </select>
 </div>
 
 <!-- From -->
 <div>
 <label class="text-xs text-gray-400 mb-1 block">FROM</label>
-<input id="fromTime"
-class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
+<input id="fromTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
 </div>
 
 <!-- To -->
 <div>
 <label class="text-xs text-gray-400 mb-1 block">TO</label>
-<input id="toTime"
-class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
+<input id="toTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
 </div>
 
 <!-- Buttons -->
 <div class="flex gap-2">
-<button onclick="loadFiltered()"
-class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold">
-Apply
-</button>
+<button onclick="loadFiltered()" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold">Apply</button>
 
-<button onclick="resetFilters()"
-class="w-12 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center">
+<button onclick="resetFilters()" class="w-12 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center">
 ⟳
 </button>
 </div>
@@ -257,8 +252,7 @@ class="w-12 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-c
 
 <div class="flex items-center justify-between px-4 py-3 text-sm text-gray-400">
 
-<div>Show 
-<select id="pageSize" onchange="changePageSize()"
+<div>Show <select id="pageSize" onchange="changePageSize()"
 class="bg-[#020617] border border-gray-700 rounded px-5 py-1 ml-2">
 <option value="10">10</option>
 <option value="20">20</option>
@@ -269,9 +263,7 @@ class="bg-[#020617] border border-gray-700 rounded px-5 py-1 ml-2">
 
 <div class="flex items-center gap-3">
 <button onclick="prevPage()" class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700">Prev</button>
-
 <span id="pageInfo"></span>
-
 <button onclick="nextPage()" class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700">Next</button>
 </div>
 
@@ -280,23 +272,21 @@ class="bg-[#020617] border border-gray-700 rounded px-5 py-1 ml-2">
 </div>
 </main>
 
-<div id="imgModal"
-style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+<div id="imgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
 background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:9999;">
-
 <img id="modalImg" style="max-width:90%; max-height:90%; border-radius:10px;">
 </div>
 
 <script>
 flatpickr("#fromTime", {
     enableTime: true,
-    dateFormat: "d-m-Y H:i:S",
+    dateFormat: "Y-m-d H:i:S",
     time_24hr: true
 });
 
 flatpickr("#toTime", {
     enableTime: true,
-    dateFormat: "d-m-Y H:i:S",
+    dateFormat: "Y-m-d H:i:S",
     time_24hr: true
 });
 
@@ -353,6 +343,21 @@ async function loadData() {
     renderTable();
 }
 
+function formatDate(dateString) {
+    let date = new Date(dateString);
+
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let year = String(date.getFullYear()).slice(-4);
+
+    let hours = String(date.getHours()).padStart(2, '0');
+    let minutes = String(date.getMinutes()).padStart(2, '0');
+    let seconds = String(date.getSeconds()).padStart(2, '0');
+    let miliseconds = String(date.getMilliseconds()).padStart(2, '0');
+
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
+
 function renderTable() {
 
     const tbody = document.getElementById("tableBody");
@@ -370,29 +375,17 @@ function renderTable() {
         const row = `
         <tr class="border-b border-[#1f2937]">
 
-            <td class="px-4 py-3">${d.timestamp}</td>
+            <td class="px-4 py-3">${formatDate(d.timestamp)}</td>
 
             <td class="px-4 py-3">${d.scn}</td>
 
             <td class="px-4 py-3">${d.lane || "-"}</td>
 
-            <td class="px-4 py-3">
-                ${d.vehicle_image
-                    ? `<button class="text-blue-400 hover:underline"
-                        onclick="showImg('${d.vehicle_image}')">
-                        View
-                      </button>`
-                    : "No Image"}
-            </td>
+            <td class="px-4 py-3">${d.vehicle_image ? `<button class="text-blue-400 hover:underline"
+                onclick="showImg('${d.vehicle_image}')">View</button>` : "No Image"}</td>
 
-            <td class="px-4 py-3">
-                ${d.plate_image
-                    ? `<button class="text-blue-400 hover:underline"
-                        onclick="showImg('${d.plate_image}')">
-                        View
-                      </button>`
-                    : "No Image"}
-            </td>
+            <td class="px-4 py-3"> ${d.plate_image ? `<button class="text-blue-400 hover:underline"
+                onclick="showImg('${d.plate_image}')">View</button>` : "No Image"}</td>
 
             <td class="px-4 py-3">${d.plate_no || "N/A"}</td>
 
