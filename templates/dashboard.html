@@ -1,111 +1,78 @@
 <!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Anpr Dashboard</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}" />
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Anpr Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}" />
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "tertiary-container": "#df7412",
-                    "secondary": "#bcc7de",
-                    "tertiary-fixed": "#ffdcc6",
-                    "on-primary-container": "#00285d",
-                    "inverse-primary": "#005ac2",
-                    "secondary-fixed-dim": "#bcc7de",
-                    "on-error": "#690005",
-                    "inverse-on-surface": "#233143",
-                    "on-primary-fixed": "#001a42",
-                    "on-secondary-fixed-variant": "#3c475a",
-                    "tertiary-fixed-dim": "#ffb786",
-                    "on-tertiary-fixed-variant": "#723600",
-                    "surface": "#051424",
-                    "inverse-surface": "#d4e4fa",
-                    "surface-tint": "#adc6ff",
-                    "primary-fixed-dim": "#adc6ff",
-                    "on-tertiary": "#502400",
-                    "on-secondary": "#263143",
-                    "surface-container-lowest": "#010f1f",
-                    "on-tertiary-fixed": "#311400",
-                    "on-secondary-container": "#aeb9d0",
-                    "primary-container": "#4d8eff",
-                    "surface-variant": "#273647",
-                    "on-background": "#d4e4fa",
-                    "surface-dim": "#051424",
-                    "secondary-container": "#3e495d",
-                    "surface-container-high": "#1c2b3c",
-                    "primary-fixed": "#d8e2ff",
-                    "error": "#ffb4ab",
-                    "outline": "#8c909f",
-                    "on-secondary-fixed": "#111c2d",
-                    "surface-container": "#122131",
-                    "on-tertiary-container": "#461f00",
-                    "on-primary": "#002e6a",
-                    "primary": "#adc6ff",
-                    "background": "#051424",
-                    "error-container": "#93000a",
-                    "outline-variant": "#424754",
-                    "on-surface": "#d4e4fa",
-                    "surface-container-highest": "#273647",
-                    "secondary-fixed": "#d8e3fb",
-                    "surface-bright": "#2c3a4c",
-                    "tertiary": "#ffb786",
-                    "on-primary-fixed-variant": "#004395",
-                    "surface-container-low": "#0d1c2d",
-                    "on-surface-variant": "#c2c6d6",
-                    "on-error-container": "#ffdad6"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-            },
-            "spacing": {
-                    "sidebar-width": "240px",
-                    "gutter": "1rem",
-                    "table-cell-padding": "0.75rem 1rem",
-                    "container-padding": "1.5rem",
-                    "card-gap": "1rem"
-            },
-            "fontFamily": {
-                    "h2": ["Inter"],
-                    "body-sm": ["Inter"],
-                    "tabular-nums": ["Inter"],
-                    "body-md": ["Inter"],
-                    "label-caps": ["Inter"],
-                    "h1": ["Inter"]
-            },
-            "fontSize": {
-                    "h2": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                    "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}],
-                    "tabular-nums": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
-                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                    "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#df7412",
+                        "secondary": "#bcc7de",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-primary-container": "#00285d",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#233143",
+                        "on-primary-fixed": "#001a42",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "surface": "#051424",
+                        "inverse-surface": "#d4e4fa",
+                        "surface-tint": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#502400",
+                        "on-secondary": "#263143",
+                        "surface-container-lowest": "#010f1f",
+                        "on-tertiary-fixed": "#311400",
+                        "on-secondary-container": "#aeb9d0",
+                        "primary-container": "#4d8eff",
+                        "surface-variant": "#273647",
+                        "on-background": "#d4e4fa",
+                        "surface-dim": "#051424",
+                        "secondary-container": "#3e495d",
+                        "surface-container-high": "#1c2b3c",
+                        "primary-fixed": "#d8e2ff",
+                        "error": "#ffb4ab",
+                        "outline": "#8c909f",
+                        "on-secondary-fixed": "#111c2d",
+                        "surface-container": "#122131",
+                        "on-tertiary-container": "#461f00",
+                        "on-primary": "#002e6a",
+                        "primary": "#adc6ff",
+                        "background": "#051424",
+                        "error-container": "#93000a",
+                        "outline-variant": "#424754",
+                        "on-surface": "#d4e4fa",
+                        "surface-container-highest": "#273647",
+                        "secondary-fixed": "#d8e3fb",
+                        "surface-bright": "#2c3a4c",
+                        "tertiary": "#ffb786",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container-low": "#0d1c2d",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-error-container": "#ffdad6"
+                    }
+                }
             }
-          },
-        },
-      }
-</script>
-<style>
-        body { background-color: #051424; color: #d4e4fa; }
-        .logo {
-            height: 60px;
-            position: absolute;
-            top: 0;
-            right: 5px;
         }
+    </script>
+
+    <style>
+        body { background-color: #051424; color: #d4e4fa; min-height: max(884px, 100dvh); }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -113,420 +80,395 @@
         ::-webkit-scrollbar-track { background: #051424; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
         .data-table-row:hover { background-color: #1c2b3c; }
-</style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-</style>
+    </style>
 </head>
-<body class="font-body-md overflow-hidden">
-<!-- Navigation Drawer -->
-<aside class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col h-full py-4">
-<div class="text-white font-bold px-4 py-6 border-b border-[#1f2937] font-h2">
-            SYSTEM CONTROL
-</div>
 
-<nav class="mt-6 flex-1">
-  <div class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 cursor-pointer font-inter text-[13px] font-medium tracking-wide">
-    <span class="material-symbols-outlined">database</span>
-    ANPR Feed
-  </div>
-  <a href="/camera-management"
-    class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
-    <span class="material-symbols-outlined">linked_camera</span>Camera Management
-  </a>
-  <div onclick="live()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
-    <span class="material-symbols-outlined">videocam</span>
-    Live View
-  </div>
-</nav>
+<body class="font-sans overflow-x-hidden flex antialiased">
 
-<div class="mt-auto border-t border-[#1f2937] pt-4">
-<div onclick="logout()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 transition-all cursor-pointer font-inter text-[13px] font-medium tracking-wide">
-<span class="material-symbols-outlined">logout</span>
-                Logout
+    <!-- Left Navigation Sidebar (Standardized Collapsible Width) -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col py-4 transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-between px-4 py-4 border-b border-[#1f2937]">
+            <!-- Toggle Button (Left) -->
+            <button onclick="toggleSidebar()" type="button" class="text-slate-400 hover:text-white focus:outline-none p-1 rounded-md hover:bg-slate-800 transition">
+                <!-- 3-Line Menu Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+
+            <!-- Sidebar Title (Right) -->
+            <span id="sidebar-title" class="text-white font-bold text-lg whitespace-nowrap transition-opacity duration-200">
+            
+            </span>
+        </div>
+
+        <nav class="mt-6 flex-1 space-y-2">
+            <div class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 cursor-pointer text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">ANPR Feed</span>
             </div>
-</div>
-</aside>
-<!-- Top App Bar -->
-<header class="fixed top-0 w-full h-16 z-50 bg-[#0a0e14] border-b border-[#1f2937] flex items-center justify-between px-6 w-full ml-[240px] max-w-[calc(100%-240px)]">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-blue-500">security</span>
-<span class="text-blue-500 font-black tracking-tighter text-xl">i-PHALAKAM&nbsp;&nbsp;&nbsp;DASHBOARD</span>
-</div>
-<div class="header">
-    <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
-</div>
-</header>
-<div id="imgModal" 
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-     background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:9999;">
-
-    <img id="modalImg" style="max-width:90%; max-height:90%;">
-
-</div>
-<!-- Main Content Canvas -->
-<main class="ml-[240px] pt-20 h-screen overflow-y-auto bg-background p-8 space-y-6">
-<!-- Search & Filter Bar -->
-
-<section class="bg-[#0f172a] border border-[#1f2937] p-5 mb-6 rounded-xl shadow-lg">
-
-<div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-
-<!-- Plate -->
-<div>
-<label class="text-xs text-gray-400 mb-1 block">REGISTRATION NUMBER</label>
-<input id="plateInput" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-placeholder="Enter regist..." />
-</div>
-
-<!-- Lane -->
-<div>
-<label class="text-xs text-gray-400 mb-1 block">LANE</label>
-
-<input id="laneInput"
-class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-placeholder="Enter lane..." />
-
-</div>
-
-<!-- Camera -->
-<div>
-<label class="text-xs text-gray-400 mb-1 block">CAMERA</label>
-<select id="cameraSelect" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2">
-<option value="">All Cameras</option>{% for s in streams %} <option value="{{s}}">{{s}}</option>{% endfor %}
-</select>
-</div>
-
-<!-- From -->
-<div>
-<label class="text-xs text-gray-400 mb-1 block">FROM</label>
-<input id="fromTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
-</div>
-
-<!-- To -->
-<div>
-<label class="text-xs text-gray-400 mb-1 block">TO</label>
-<input id="toTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2"/>
-</div>
-
-<!-- Buttons -->
-<div class="flex gap-2">
-<button onclick="loadFiltered()" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold">Apply</button>
-
-<button onclick="resetFilters()" class="w-12 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center">
-⟳
-</button>
-</div>
-
-</div>
-</section>
-<!-- Real-time Feed Table -->
-<div class="bg-surface-container-low border border-[#1f2937] rounded-lg overflow-hidden shadow-sm">
-<div class="px-6 py-4 border-b border-[#1f2937] flex items-center justify-between">
-<h2 class="font-h2 text-white flex items-center gap-2">
-<span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Live Detections</h2>
-
-</div>
-
-
-<div class="overflow-x-auto">
-  <table class="w-full text-center border-collapse">
-    
-    <thead class="bg-[#020617] sticky top-0">
-      <tr>
-        <th class="px-6 py-3 text-left">TIMESTAMP</th>
-        <th class="px-6 py-3 font-bold border-b border-[#1f2937]">CAMERA SCN</th>
-        <th class="px-6 py-3 font-bold border-b border-[#1f2937]">LANE</th>
-        <th class="px-6 py-3 font-bold border-b border-[#1f2937]">VEHICLE IMAGE</th>
-        <th class="px-6 py-3 font-bold border-b border-[#1f2937]">NO PLATE IMAGE</th>
-        <th class="px-6 py-3 font-bold border-b border-[#1f2937]">REGISTRATION NO</th>
-      </tr>
-    </thead>
-
-    <tbody id="tableBody" class="divide-y divide-[#1f2937] text-center align-middle"></tbody>
-
-  </table>
-</div>
 
-<div class="flex items-center justify-between px-4 py-3 text-sm text-gray-400">
-
-<div>Show <select id="pageSize" onchange="changePageSize()"
-class="bg-[#020617] border border-gray-700 rounded px-5 py-1 ml-2">
-<option value="10">10</option>
-<option value="20">20</option>
-<option value="50">50</option>
-<option value="100">100</option>
-</select>
-</div>
-
-<div class="flex items-center gap-3">
-<button onclick="prevPage()" class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700">Prev</button>
-<span id="pageInfo"></span>
-<button onclick="nextPage()" class="px-3 py-1 bg-gray-800 rounded hover:bg-gray-700">Next</button>
-</div>
-
-</div>
-
-</div>
-</main>
-
-<div id="imgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:9999;">
-<img id="modalImg" style="max-width:90%; max-height:90%; border-radius:10px;">
-</div>
-
-<script>
-flatpickr("#fromTime", {
-    enableTime: true,
-    dateFormat: "Y-m-d H:i:S",
-    time_24hr: true
-});
-
-flatpickr("#toTime", {
-    enableTime: true,
-    dateFormat: "Y-m-d H:i:S",
-    time_24hr: true
-});
-
-let allData = [];
-let currentPage = 1;
-let pageSize = 10;
-let isFiltered = false;
-let debounceTimer;
-
-function buildUrl() {
-
-    let stream = document.getElementById("cameraSelect").value;
-    let plate = document.getElementById("plateInput").value.trim();
-    let lane = document.getElementById("laneInput").value.trim();
-
-    let from = document.getElementById("fromTime").value;
-    let to = document.getElementById("toTime").value;
-
-    let url = `http://{{ ip }}:8070/api/data?`;
-
-    let params = [];
-
-    if (stream) {
-        params.push(`stream_id=${encodeURIComponent(stream)}`);
-    }
-
-    if (plate) {
-        params.push(`plate_no=${encodeURIComponent(plate)}`);
-    }
-
-    if (lane) {
-        params.push(`lane=${encodeURIComponent(lane)}`);
-    }
-
-    if (from && to) {
-        params.push(`from_time=${encodeURIComponent(from)}`);
-        params.push(`to_time=${encodeURIComponent(to)}`);
-    }
-
-    return url + params.join("&");
-}
-// Load data
-
-async function loadData() {
-
-    const res = await fetch(buildUrl());
-
-    const data = await res.json();
-
-    allData = data;
-
-    //currentPage = 1;
-
-    renderTable();
-}
-
-function formatDate(dateString) {
-    let date = new Date(dateString);
-
-    let day = String(date.getDate()).padStart(2, '0');
-    let month = String(date.getMonth() + 1).padStart(2, '0');
-    let year = String(date.getFullYear()).slice(-4);
-
-    let hours = String(date.getHours()).padStart(2, '0');
-    let minutes = String(date.getMinutes()).padStart(2, '0');
-    let seconds = String(date.getSeconds()).padStart(2, '0');
-    let miliseconds = String(date.getMilliseconds()).padStart(2, '0');
-
-    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-}
-
-function renderTable() {
-
-    const tbody = document.getElementById("tableBody");
-
-    tbody.innerHTML = "";
-
-    const start = (currentPage - 1) * pageSize;
-
-    const end = start + pageSize;
-
-    const pageData = allData.slice(start, end);
-
-    pageData.forEach(d => {
-
-        const row = `
-        <tr class="border-b border-[#1f2937]">
-
-            <td class="px-4 py-3">${formatDate(d.timestamp)}</td>
-
-            <td class="px-4 py-3">${d.scn}</td>
-
-            <td class="px-4 py-3">${d.lane || "-"}</td>
-
-            <td class="px-4 py-3">${d.vehicle_image ? `<button class="text-blue-400 hover:underline"
-                onclick="showImg('${d.vehicle_image}')">View</button>` : "No Image"}</td>
-
-            <td class="px-4 py-3"> ${d.plate_image ? `<button class="text-blue-400 hover:underline"
-                onclick="showImg('${d.plate_image}')">View</button>` : "No Image"}</td>
-
-            <td class="px-4 py-3">${d.plate_no || "N/A"}</td>
-
-        </tr>
-        `;
-
-        tbody.innerHTML += row;
-    });
-
-    document.getElementById("pageInfo").innerText =
-        `Page ${currentPage} of ${Math.max(1, Math.ceil(allData.length / pageSize))}`;
-}
-
-function nextPage() {
-
-    if (currentPage * pageSize < allData.length) {
-        currentPage++;
-        renderTable();
-    }
-}
-
-function prevPage() {
-
-    if (currentPage > 1) {
-        currentPage--;
-        renderTable();
-    }
-}
-
-function changePageSize() {
-
-    pageSize = parseInt(document.getElementById("pageSize").value);
-
-    currentPage = 1;
-
-    renderTable();
-}
-
-function loadFiltered() {
-
-    currentPage = 1;
-
-    isFiltered = true;
-
-    loadData();
-}
-// Filter
-
-function resetFilters() {
-
-    currentPage = 1;
-
-    document.getElementById("plateInput").value = "";
-
-    document.getElementById("laneInput").value = "";
-
-    document.getElementById("cameraSelect").value = "";
-
-    document.getElementById("fromTime").value = "";
-
-    document.getElementById("toTime").value = "";
-
-    isFiltered = false;
-
-    loadData();
-}
-
-function showImg(path) {
-
-    const modal = document.getElementById("imgModal");
-
-    const img = document.getElementById("modalImg");
-
-    img.src = `http://{{ ip }}:8070${path}`;
-
-    modal.style.display = "flex";
-}
-
-// click anywhere to close
-document.getElementById("imgModal").onclick = function () {
-
-    this.style.display = "none";
-};
-
-function closeImg() {
-    document.getElementById("modal").style.display = "none";
-}
-
-document.getElementById("plateInput").addEventListener("input", () => {
-
-    clearTimeout(debounceTimer);
-
-    debounceTimer = setTimeout(() => {
-
-        currentPage = 1;
+            <a href="/camera-management" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
+                        <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.151-.178a1.56 1.56 0 0 0 1.11-.71l.822-1.315a2.942 2.942 0 0 1 2.332-1.39ZM6.75 12.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Zm12-1.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Camera Management</span>
+            </a>
+
+            <div onclick="live()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 cursor-pointer text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M4.5 4.5a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h8.25a3 3 0 0 0 3-3v-9a3 3 0 0 0-3-3H4.5ZM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06Z" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Live View</span>
+            </div>
+        </nav>
+
+        <div class="mt-auto border-t border-[#1f2937] pt-4">
+            <div onclick="logout()" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 transition-all cursor-pointer text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Logout</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Header (Dynamic Offset with left-[210px]) -->
+    <header class="fixed top-0 left-[210px] right-0 h-16 z-50 bg-[#0a0e14] border-b border-[#1f2937] flex items-center justify-between px-6 transition-all duration-300 ease-in-out">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-blue-500">security</span>
+            <span class="text-blue-500 font-black tracking-tighter text-xl">i-PHALAKAM</span>
+        </div>
+        <div class="flex items-center">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="h-10 w-auto object-contain">
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="ml-[210px] pt-20 flex-1 min-h-screen bg-[#051424] p-8 space-y-6 overflow-y-auto transition-all duration-300 ease-in-out">
+
+        <!-- Search & Filter Bar -->
+        <section class="bg-[#0f172a] border border-[#1f2937] p-5 mb-6 rounded-xl shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                <!-- Plate -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">REGISTRATION NUMBER</label>
+                    <input id="plateInput" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm text-white" placeholder="Enter regist..." />
+                </div>
+
+                <!-- Lane -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">LANE</label>
+                    <input id="laneInput" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm text-white" placeholder="Enter lane..." />
+                </div>
+
+                <!-- Camera -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">CAMERA</label>
+                    <select id="cameraSelect" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                        <option value="">All Cameras</option>
+                        {% for s in streams %}
+                            <option value="{{s}}">{{s}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- From -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">FROM</label>
+                    <input id="fromTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"/>
+                </div>
+
+                <!-- To -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">TO</label>
+                    <input id="toTime" class="w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white"/>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-2">
+                    <button onclick="loadFiltered()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm transition">Apply</button>
+                    <button onclick="resetFilters()" class="w-12 bg-gray-800 hover:bg-gray-700 text-white rounded-lg flex items-center justify-center transition">⟳</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-time Feed Table -->
+        <div class="bg-[#122131] border border-[#1f2937] rounded-lg overflow-hidden shadow-sm">
+            <div class="px-6 py-4 border-b border-[#1f2937] flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Live Detections
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse">
+                    <thead class="bg-[#020617] sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-300 border-b border-[#1f2937]">TIMESTAMP</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-gray-300 border-b border-[#1f2937]">CAMERA SCN</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-gray-300 border-b border-[#1f2937]">LANE</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-gray-300 border-b border-[#1f2937]">VEHICLE IMAGE</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-gray-300 border-b border-[#1f2937]">NO PLATE IMAGE</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-gray-300 border-b border-[#1f2937]">REGISTRATION NO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-[#1f2937] text-center align-middle text-sm text-gray-200"></tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between px-4 py-3 text-sm text-gray-400 border-t border-[#1f2937]">
+                <div>Show 
+                    <select id="pageSize" onchange="changePageSize()" class="bg-[#020617] border border-gray-700 rounded px-7 py-1 ml-2 text-white">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="prevPage()" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition">Prev</button>
+                    <span id="pageInfo"></span>
+                    <button onclick="nextPage()" class="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 transition">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Modal -->
+    <div id="imgModal" style="display:none;" class="fixed inset-0 bg-black/85 z-[9999] flex items-center justify-center p-4">
+        <img id="modalImg" class="max-w-[90%] max-h-[90%] rounded-lg border border-[#1f2937] shadow-2xl">
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarTitle = document.getElementById('sidebar-title');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const mainContent = document.querySelector('main');
+            const header = document.querySelector('header');
+
+            sidebar.classList.toggle('w-[210px]');
+            sidebar.classList.toggle('w-[68px]');
+
+            if (sidebar.classList.contains('w-[68px]')) {
+                sidebarTitle.classList.add('hidden');
+                sidebarTexts.forEach(el => el.classList.add('hidden'));
+
+                if (mainContent) {
+                    mainContent.style.marginLeft = '68px';
+                }
+                if (header) {
+                    header.style.left = '68px';
+                }
+            } else {
+                sidebarTitle.classList.remove('hidden');
+                sidebarTexts.forEach(el => el.classList.remove('hidden'));
+
+                if (mainContent) {
+                    mainContent.style.marginLeft = '210px';
+                }
+                if (header) {
+                    header.style.left = '210px';
+                }
+            }
+        }
+
+        flatpickr("#fromTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i:S",
+            time_24hr: true
+        });
+
+        flatpickr("#toTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i:S",
+            time_24hr: true
+        });
+
+        let allData = [];
+        let currentPage = 1;
+        let pageSize = 10;
+        let isFiltered = false;
+        let debounceTimer;
+
+        function buildUrl() {
+            let stream = document.getElementById("cameraSelect").value;
+            let plate = document.getElementById("plateInput").value.trim();
+            let lane = document.getElementById("laneInput").value.trim();
+            let from = document.getElementById("fromTime").value;
+            let to = document.getElementById("toTime").value;
+
+            let url = `http://{{ ip }}:8070/api/data?`;
+            let params = [];
+
+            if (stream) params.push(`stream_id=${encodeURIComponent(stream)}`);
+            if (plate) params.push(`plate_no=${encodeURIComponent(plate)}`);
+            if (lane) params.push(`lane=${encodeURIComponent(lane)}`);
+            if (from && to) {
+                params.push(`from_time=${encodeURIComponent(from)}`);
+                params.push(`to_time=${encodeURIComponent(to)}`);
+            }
+
+            return url + params.join("&");
+        }
+
+        async function loadData() {
+            try {
+                const res = await fetch(buildUrl());
+                const data = await res.json();
+                allData = data;
+                renderTable();
+            } catch (err) {
+                console.error("Error fetching ANPR feed:", err);
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return "-";
+            let date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = String(date.getFullYear());
+
+            let hours = String(date.getHours()).padStart(2, '0');
+            let minutes = String(date.getMinutes()).padStart(2, '0');
+            let seconds = String(date.getSeconds()).padStart(2, '0');
+
+            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = allData.slice(start, end);
+
+            pageData.forEach(d => {
+                const row = `
+                <tr class="hover:bg-[#1c2b3c] transition duration-150 border-b border-[#1f2937]">
+                    <td class="px-6 py-3 text-left font-mono text-xs">${formatDate(d.timestamp)}</td>
+                    <td class="px-6 py-3 font-mono text-xs">${d.scn || "-"}</td>
+                    <td class="px-6 py-3 text-xs">${d.lane || "-"}</td>
+                    <td class="px-6 py-3 text-xs">
+                        ${d.vehicle_image ? `<button class="text-blue-400 hover:underline font-medium" onclick="showImg('${d.vehicle_image}')">View</button>` : `<span class="text-gray-500">No Image</span>`}
+                    </td>
+                    <td class="px-6 py-3 text-xs">
+                        ${d.plate_image ? `<button class="text-blue-400 hover:underline font-medium" onclick="showImg('${d.plate_image}')">View</button>` : `<span class="text-gray-500">No Image</span>`}
+                    </td>
+                    <td class="px-6 py-3 font-mono font-bold text-sm text-blue-300">${d.plate_no || "N/A"}</td>
+                </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById("pageInfo").innerText =
+                `Page ${currentPage} of ${Math.max(1, Math.ceil(allData.length / pageSize))}`;
+        }
+
+        function nextPage() {
+            if (currentPage * pageSize < allData.length) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById("pageSize").value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function loadFiltered() {
+            currentPage = 1;
+            isFiltered = true;
+            loadData();
+        }
+
+        function resetFilters() {
+            currentPage = 1;
+            document.getElementById("plateInput").value = "";
+            document.getElementById("laneInput").value = "";
+            document.getElementById("cameraSelect").value = "";
+            document.getElementById("fromTime").value = "";
+            document.getElementById("toTime").value = "";
+            isFiltered = false;
+            loadData();
+        }
+
+        function showImg(path) {
+            const modal = document.getElementById("imgModal");
+            const img = document.getElementById("modalImg");
+            img.src = `http://{{ ip }}:8070${path}`;
+            modal.style.display = "flex";
+        }
+
+        document.getElementById("imgModal").onclick = function () {
+            this.style.display = "none";
+        };
+
+        document.getElementById("plateInput").addEventListener("input", () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                currentPage = 1;
+                loadData();
+            }, 500);
+        });
+
+        document.getElementById("laneInput").addEventListener("input", () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                currentPage = 1;
+                loadData();
+            }, 500);
+        });
+
+        document.getElementById("cameraSelect").addEventListener("change", () => {
+            currentPage = 1;
+            loadData();
+        });
+
+        setInterval(() => {
+            if (!isFiltered) {
+                loadData();
+            }
+        }, 3000);
 
         loadData();
 
-    }, 500);
-});
+        function live() {
+            window.location.href = "/view1";
+        }
 
-document.getElementById("laneInput").addEventListener("input", () => {
-
-    clearTimeout(debounceTimer);
-
-    debounceTimer = setTimeout(() => {
-
-        currentPage = 1;
-
-        loadData();
-
-    }, 500);
-});
-document.getElementById("cameraSelect").addEventListener("change", () => {
-
-    currentPage = 1;
-
-    loadData();
-});
-
-// Auto refresh
-setInterval(() => {
-
-    if (!isFiltered) {
-        loadData();
-    }
-
-}, 3000);
-
-// Initial load
-loadData();
-
-function live() {
-
-    window.location.href = "/view1";
-}
-
-function logout() {
-    window.location.href = "/logout";
-}
-
-</script>
-
-</body></html>
+        function logout() {
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

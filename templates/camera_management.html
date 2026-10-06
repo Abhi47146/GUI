@@ -12,104 +12,175 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 
     <style>
-        body { background-color: #051424; color: #d4e4fa; min-height: 100vh; font-family: 'Inter', sans-serif; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { background-color: #051424; color: #d4e4fa; min-height: max(884px, 100dvh); }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #051424; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        .data-table-row:hover { background-color: #1c2b3c; }
         
         .camera-table { width: 100%; border-collapse: collapse; background: #122131; border: 1px solid #1f2937; }
         .camera-table thead th { background-color: #1c2b3c !important; color: #ffffff !important; border: 1px solid #273647 !important; text-align: center !important; padding: 12px !important; font-weight: 600; font-size: 13px; }
         .camera-table tbody td { background-color: #122131 !important; color: #d4e4fa !important; border: 1px solid #1f2937 !important; text-align: center !important; vertical-align: middle !important; padding: 10px 12px !important; font-size: 13px; }
     </style>
 </head>
-<body class="font-body-md overflow-x-hidden flex">
+<body class="font-sans overflow-x-hidden flex antialiased">
 
     <!-- Left Navigation Sidebar -->
-    <aside class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col h-full py-4">
-        <div class="text-white font-bold px-4 py-6 border-b border-[#1f2937] font-h2">
-            SYSTEM CONTROL
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-[210px] z-[60] bg-[#121826] border-r border-[#1f2937] flex flex-col py-4 transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-between px-4 py-4 border-b border-[#1f2937]">
+            <!-- Toggle Button (Left) -->
+            <button onclick="toggleSidebar()" type="button" class="text-slate-400 hover:text-white focus:outline-none p-1 rounded-md hover:bg-slate-800 transition">
+                <!-- 3-Line Menu Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+
+            <!-- Sidebar Title (Right) -->
+            <span id="sidebar-title" class="text-white font-bold text-lg whitespace-nowrap transition-opacity duration-200">
+            
+            </span>
         </div>
-        <nav class="mt-6 flex-1">
-            <div class="space-y-2">
-                <a href="/home" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
-                    <span class="material-symbols-outlined">database</span>ANPR Feed
-                </a>
-                <a href="/camera-management" class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 text-[13px] font-medium tracking-wide">
-                    <span class="material-symbols-outlined">linked_camera</span>Camera Management
-                </a>
-                <a href="/view1" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
-                    <span class="material-symbols-outlined">videocam</span>Live View
-                </a>
-            </div>
+
+        <nav class="mt-6 flex-1 space-y-2">
+            <a href="/home" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">ANPR Feed</span>
+            </a>
+
+            <a href="/camera-management" class="bg-blue-500/10 text-blue-500 border-l-4 border-blue-500 flex items-center gap-3 px-4 py-3 text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
+                        <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.151-.178a1.56 1.56 0 0 0 1.11-.71l.822-1.315a2.942 2.942 0 0 1 2.332-1.39ZM6.75 12.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Zm12-1.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Camera Management</span>
+            </a>
+
+            <a href="/view1" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M4.5 4.5a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h8.25a3 3 0 0 0 3-3v-9a3 3 0 0 0-3-3H4.5ZM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06Z" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Live View</span>
+            </a>
         </nav>
+
         <div class="mt-auto border-t border-[#1f2937] pt-4">
             <a href="/logout" class="text-slate-400 flex items-center gap-3 px-4 py-3 hover:text-slate-200 text-[13px] font-medium tracking-wide">
-                <span class="material-symbols-outlined">logout</span>Logout
+                <span class="min-w-[24px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+                <span class="sidebar-text whitespace-nowrap">Logout</span>
             </a>
         </div>
     </aside>
 
+    <!-- Header -->
+    <header class="fixed top-0 left-[210px] right-0 h-16 z-50 bg-[#0a0e14] border-b border-[#1f2937] flex items-center justify-between px-6 transition-all duration-300 ease-in-out">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-blue-500">security</span>
+            <span class="text-blue-500 font-black tracking-tighter text-xl">i-PHALAKAM</span>
+        </div>
+        <div class="flex items-center">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="h-10 w-auto object-contain">
+        </div>
+    </header>
+
     <!-- Main Content Area -->
-    <main class="ml-[210px] flex-1 min-h-screen bg-[#051424] p-8">
+    <main class="ml-[210px] pt-20 flex-1 min-h-screen bg-[#051424] p-8 transition-all duration-300 ease-in-out">
         <div class="w-full bg-[#122131] border border-[#1f2937] text-white flex items-center justify-between px-6 py-3 rounded-lg mb-6">
-            <h1 class="text-2xl font-bold tracking-wider text-center flex-1 pr-10">CAMERAS</h1>
+            <h1 class="text-2xl font-bold tracking-wider text-center flex-1">CAMERAS</h1>
         </div>
 
-        <div class="flex justify-end mb-4">
+        <div class="flex justify-end gap-3 mb-4">
+            <!-- Restart System Service Button -->
+            <button type="button" onclick="restartService(this)" class="bg-amber-600/20 text-amber-400 border border-amber-500/40 hover:bg-amber-600 hover:text-white font-medium px-4 py-2 rounded-md text-sm transition flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">restart_alt</span> Restart Service
+            </button>
+
+            <!-- Add Camera Button -->
             <button type="button" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition flex items-center gap-2">
                 <span class="material-symbols-outlined text-sm">add</span> Add Camera
             </button>
         </div>
 
         <div class="bg-[#122131] border border-[#1f2937] rounded-lg p-4">
-        <table class="camera-table">
-            <thead>
-                <tr>
-                    <th style="width: 15%;">SCN</th>
-                    <th style="width: 10%;">Link</th>
-                    <th style="width: 45%;">STREAM LINK</th>
-                    <th style="width: 10%;">Status</th>
-                    <th style="width: 10%;">Action</th>
-                </tr>
-            </thead>
-            <tbody id="alert_body">
-                {% if not streams %}
-                <tr>
-                    <td colspan="5" class="text-center text-slate-400 py-6">No Cameras Configured</td>
-                </tr>
-                {% else %}
-                    {% for stream in streams %}
+            <table class="camera-table">
+                <thead>
                     <tr>
-                        <td class="font-mono text-sm">{{ stream.scn }}</td>
-                        <td>
-                            <a href="{{ url_for('camera_setup', scn=stream.scn) }}" class="text-blue-400 hover:underline font-medium">Link</a>
-                        </td>
-                        <td class="text-left font-mono text-xs text-slate-300 break-all">{{ stream.url }}</td>
-                        <td>
-                            {% if stream.is_online %}
-                                <span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">ON</span>
-                            {% else %}
-                                <span class="text-red-400 font-bold text-xs bg-red-500/10 px-2 py-1 rounded border border-red-500/20">OFF</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="flex items-center justify-center gap-2">
-                                <button class="bg-[#1c2b3c] hover:bg-slate-700 text-white text-xs px-3 py-1 rounded border border-slate-600 transition" 
-                                        onclick="openEditModal('{{ stream.scn }}', '{{ stream.url }}', '{{ stream.third_party_ip }}', '{{ stream.third_party_port }}')">
-                                    Edit
-                                </button>
-                                <button class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded transition" onclick="deleteCamera('{{ stream.scn }}')">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
+                        <th style="width: 15%;">SCN</th>
+                        <th style="width: 10%;">Link</th>
+                        <th style="width: 45%;">STREAM LINK</th>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 10%;">Action</th>
                     </tr>
-                    {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody id="alert_body">
+                    {% if not streams %}
+                    <tr>
+                        <td colspan="5" class="text-center text-slate-400 py-6">No Cameras Configured</td>
+                    </tr>
+                    {% else %}
+                        {% for stream in streams %}
+                        <tr>
+                            <td class="font-mono text-sm">{{ stream.scn }}</td>
+                            <td>
+                                <a href="{{ url_for('camera_setup', scn=stream.scn) }}" class="text-blue-400 hover:underline font-medium">Link</a>
+                            </td>
+                            <td class="text-left font-mono text-xs text-slate-300 break-all">{{ stream.url }}</td>
+                            <td>
+                                {% if stream.is_online %}
+                                    <span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">ONLINE</span>
+                                {% else %}
+                                    <span class="text-red-400 font-bold text-xs bg-red-500/10 px-2 py-1 rounded border border-red-500/20">OFFLINE</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="flex items-center justify-center gap-2">
+                                    {% if stream.is_processing %}
+                                        <!-- Modern High-Contrast Stop Button (Coral Red) -->
+                                        <button type="button" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs px-3 py-1.5 rounded transition flex items-center gap-1 shadow-sm"
+                                                onclick="toggleProcess('{{ stream.scn }}', 'stop', this)">
+                                            <span class="material-symbols-outlined text-[14px]">stop</span> Stop
+                                        </button>
+                                    {% else %}
+                                        <!-- Modern High-Contrast Start Button (Emerald Green) -->
+                                        <button type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3 py-1.5 rounded transition flex items-center gap-1 shadow-sm"
+                                                onclick="toggleProcess('{{ stream.scn }}', 'start', this)">
+                                            <span class="material-symbols-outlined text-[14px]">play_arrow</span> Start
+                                        </button>
+                                    {% endif %}
+
+                                    <button type="button" class="bg-[#1c2b3c] hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded border border-slate-600 transition" 
+                                            onclick="openEditModal('{{ stream.scn }}', '{{ stream.url }}', '{{ stream.third_party_ip }}', '{{ stream.third_party_port }}')">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="bg-red-600/80 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded transition" onclick="deleteCamera('{{ stream.scn }}')">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <!-- Modal: Add Camera -->
@@ -178,6 +249,39 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarTitle = document.getElementById('sidebar-title');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const mainContent = document.querySelector('main');
+            const header = document.querySelector('header');
+
+            sidebar.classList.toggle('w-[210px]');
+            sidebar.classList.toggle('w-[68px]');
+
+            if (sidebar.classList.contains('w-[68px]')) {
+                sidebarTitle.classList.add('hidden');
+                sidebarTexts.forEach(el => el.classList.add('hidden'));
+
+                if (mainContent) {
+                    mainContent.style.marginLeft = '68px';
+                }
+                if (header) {
+                    header.style.left = '68px';
+                }
+            } else {
+                sidebarTitle.classList.remove('hidden');
+                sidebarTexts.forEach(el => el.classList.remove('hidden'));
+
+                if (mainContent) {
+                    mainContent.style.marginLeft = '210px';
+                }
+                if (header) {
+                    header.style.left = '210px';
+                }
+            }
+        }
+
         function openAddModal() { document.getElementById('addCameraModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addCameraModal').classList.add('hidden'); }
 
@@ -198,6 +302,74 @@
                     method: 'POST',
                     body: JSON.stringify({ 'scn': scn })
                 }).then(res => res.ok ? location.reload() : alert('Failed to delete.'));
+            }
+        }
+
+        function toggleProcess(scn, action, btnElem) {
+            if (!btnElem) return;
+
+            btnElem.disabled = true;
+            btnElem.style.opacity = '0.5';
+
+            fetch('/toggle_process', {
+                headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                body: JSON.stringify({ 'scn': scn, 'action': action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (action === 'start') {
+                        btnElem.outerHTML = `
+                            <button type="button" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs px-3 py-1.5 rounded transition flex items-center gap-1 shadow-sm"
+                                    onclick="toggleProcess('${scn}', 'stop', this)">
+                                <span class="material-symbols-outlined text-[14px]">stop</span> Stop
+                            </button>`;
+                    } else {
+                        btnElem.outerHTML = `
+                            <button type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3 py-1.5 rounded transition flex items-center gap-1 shadow-sm"
+                                    onclick="toggleProcess('${scn}', 'start', this)">
+                                <span class="material-symbols-outlined text-[14px]">play_arrow</span> Start
+                            </button>`;
+                    }
+                } else {
+                    alert('Failed to update process status: ' + (data.message || 'Unknown error'));
+                    btnElem.disabled = false;
+                    btnElem.style.opacity = '1';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error communicating with server.');
+                btnElem.disabled = false;
+                btnElem.style.opacity = '1';
+            });
+        }
+
+        function restartService(btn) {
+            if (confirm("Are you sure you want to restart the iphalakam service?")) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                
+                fetch('/restart_service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Service restart command sent successfully. Page will reload in 3 seconds.");
+                        setTimeout(() => location.reload(), 3000);
+                    } else {
+                        alert("Failed to restart service: " + (data.message || "Unknown error"));
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }
+                })
+                .catch(err => {
+                    alert("Service is restarting...");
+                    setTimeout(() => location.reload(), 4000);
+                });
             }
         }
     </script>

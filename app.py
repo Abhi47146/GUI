@@ -2,6 +2,8 @@ import configparser
 import os
 import socket
 import sqlite3
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import resource_tracker, shared_memory
 from urllib.parse import urlparse
 
@@ -22,6 +24,7 @@ from passlib.context import CryptContext
 
 CONFIG_FILE = "config.ini"
 
+
 def load_config():
     config = configparser.ConfigParser(
         inline_comment_prefixes=('#', ';'),
@@ -31,13 +34,13 @@ def load_config():
         config.read(CONFIG_FILE)
     return config
 
+
 def save_config(config):
     with open(CONFIG_FILE, "w") as configfile:
         config.write(configfile)
 
 
 def check_stream_online(stream_url, timeout=0.5):
-    
     if not stream_url:
         return False
 
@@ -63,98 +66,68 @@ def check_stream_online(stream_url, timeout=0.5):
 
     return False
 
-def get_streams_list():
+
+def get_active_scns_list():
+    """Reads active processing SCNs directly from [camera_scn] scns key."""
     config = load_config()
-    streams = []
-    
     system_sections = ["api", "data_cleanup", "frame_size", "video_display", "tis", "GUI", "camera_scn"]
     
     if config.has_section("camera_scn") and config.has_option("camera_scn", "scns"):
         raw_scns = config.get("camera_scn", "scns")
-        camera_scns = [
+        return [
             s.strip() for s in raw_scns.split(",") 
             if s.strip() and s.strip() not in system_sections
         ]
+    return []
+
+def get_streams_list():
+    """Returns all camera sections defined in config.ini with fast parallel online status checks."""
+    config = load_config()
+    system_sections = ["api", "data_cleanup", "frame_size", "video_display", "tis", "GUI", "camera_scn"]
+    
+    active_scns = get_active_scns_list()
+    camera_sections = [s for s in config.sections() if s not in system_sections]
+
+    def process_single_camera(section):
+        stream_url = config.get(section, "stream", fallback="")
+        tp_ip = config.get(section, "third_party_ip", fallback="")
+        tp_port = config.get(section, "third_party_port", fallback="")
         
-        for scn in camera_scns:
-            if config.has_section(scn):
-                stream_url = config.get(scn, "stream", fallback="")
-                tp_ip = config.get(scn, "third_party_ip", fallback="")
-                tp_port = config.get(scn, "third_party_port", fallback="")
-                
-                zones = {
-                    k: v for k, v in config.items(scn) 
-                    if k.startswith("zone_dimensions_")
-                }
-                
-                is_online = check_stream_online(stream_url)
-                streams.append({
-                    "scn": scn,
-                    "url": stream_url,
-                    "third_party_ip": tp_ip,
-                    "third_party_port": tp_port,
-                    "zones": zones,
-                    "is_online": is_online,
-                })
+        zones = {
+            k: v for k, v in config.items(section) 
+            if k.startswith("zone_dimensions_")
+        }
+        
+        # Fast socket check with 0.2s max timeout per thread
+        is_online = check_stream_online(stream_url, timeout=0.2)
+        is_processing = section in active_scns
+
+        return {
+            "scn": section,
+            "url": stream_url,
+            "third_party_ip": tp_ip,
+            "third_party_port": tp_port,
+            "zones": zones,
+            "is_online": is_online,
+            "is_processing": is_processing,
+        }
+
+    # Execute all camera socket checks in parallel threads simultaneously
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        streams = list(executor.map(process_single_camera, camera_sections))
 
     return streams
 
-def update_camera_in_config(old_scn, new_scn, stream_url, port="1233"):
-    """
-    Updates or adds camera details in config.ini while preserving 
-    unrelated sections (like data_cleanup) and extra keys intact.
-    """
-    config = load_config()
-    
-    # Preserve existing camera keys if updating
-    existing_items = {}
-    if old_scn and config.has_section(old_scn):
-        existing_items = dict(config.items(old_scn))
-        if old_scn != new_scn:
-            config.remove_section(old_scn)
-            
-    if not config.has_section(new_scn):
-        config.add_section(new_scn)
-        
-    # Re-apply non-GUI keys if any existed
-    for k, v in existing_items.items():
-        config.set(new_scn, k, v)
-        
-    # Only update parameters edited from GUI
-    config.set(new_scn, "stream", stream_url)
-    config.set(new_scn, "port", port)
-    
-    # Safely update [Junctions] scns parameter without removing system sections like data_cleanup
-    if config.has_section("camera_scn") and config.has_option("camera_scn", "scns"):
-        raw_scns = [s.strip() for s in config.get("camera_scn", "scns").split(",") if s.strip()]
-        
-        # Replace or add the new camera SCN in the scns list
-        if old_scn in raw_scns:
-            idx = raw_scns.index(old_scn)
-            raw_scns[idx] = new_scn
-        elif new_scn not in raw_scns:
-            raw_scns.append(new_scn)
-            
-        config.set("camera_scn", "scns", ",".join(raw_scns))
-        
-    with open(CONFIG_FILE, "w") as configfile:
-        config.write(configfile)
 
 def sync_junctions_key(config):
-    
-    # System sections that must NEVER be written into the 'scns' camera list
+    """Ensures [camera_scn] section exists without overwriting existing selections unnecessarily."""
     system_sections = ["api", "data_cleanup", "frame_size", "video_display", "tis", "GUI", "camera_scn"]
-    
-    # Filter out system sections
-    camera_sections = [
-        section for section in config.sections() 
-        if section not in system_sections
-    ]
     
     if not config.has_section("camera_scn"):
         config.add_section("camera_scn")
-        
-    config.set("camera_scn", "scns", ",".join(camera_sections))
+        camera_sections = [s for s in config.sections() if s not in system_sections]
+        config.set("camera_scn", "scns", ",".join(camera_sections))
+
 
 def generate_raw_stream(stream_url, width=None, height=None):
     """Captures directly from RTSP URL or MP4 File Path using non-blocking FFmpeg options."""
@@ -171,7 +144,6 @@ def generate_raw_stream(stream_url, width=None, height=None):
         while cap.isOpened():
             success, frame = cap.read()
             if not success:
-                
                 break
 
             if width and height:
@@ -187,6 +159,7 @@ def generate_raw_stream(stream_url, width=None, height=None):
     finally:
         cap.release()
 
+
 conf = load_config()
 IP = conf.get("api", "ip", fallback="127.0.0.1")
 
@@ -196,7 +169,7 @@ app.secret_key = "your_secret_key"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 DATABASE = "users.db"
-BASE_FOLDER = "static/images"
+
 
 def init_db():
     with sqlite3.connect(DATABASE) as conn:
@@ -210,13 +183,16 @@ def init_db():
         """)
         conn.commit()
 
+
 if not os.path.exists(DATABASE):
     init_db()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def get_db_conn():
     return sqlite3.connect(DATABASE)
+
 
 # ---------------- AUTH ROUTES ----------------
 
@@ -238,6 +214,7 @@ def signup():
     except sqlite3.IntegrityError:
         return "User already exists"
 
+
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -257,13 +234,14 @@ def login():
     else:
         return render_template("index_sign.html", error="Invalid Credentials")
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
-# ---------------- SHARED MEMORY & STREAMING ----------------
 
+# ---------------- SHARED MEMORY & STREAMING ----------------
 shared_cache = {}
 
 def get_shm_array(stream_id):
@@ -280,6 +258,7 @@ def get_shm_array(stream_id):
     print("Connected to SHM safely without ownership tracking:", name)
 
     return shared_cache[stream_id]
+
 
 @socketio.on("stream")
 def stream(data):
@@ -305,18 +284,20 @@ def stream(data):
 
     print(f"Cleaned up background loop thread for SID: {current_sid}.")
 
+
 # ---------------- DASHBOARD & CAMERA MANAGEMENT ----------------
 
 @app.route("/home")
 def home():
-    # Extract only the scn string from each stream dictionary
     scns_only = [stream["scn"] for stream in get_streams_list()]
     return render_template("dashboard.html", streams=scns_only, ip=IP)
+
 
 @app.route("/camera-management")
 def camera_management():
     streams = get_streams_list()
     return render_template("camera_management.html", streams=streams)
+
 
 @app.route("/add_camera", methods=["POST"])
 def add_camera():
@@ -337,10 +318,49 @@ def add_camera():
             config.set(scn, "third_party_port", third_party_port)
         config.set(scn, "debug", "False")
         config.set(scn, "result_storage_path", "None")
-        sync_junctions_key(config)
+
+        # Automatically add new camera to active [camera_scn] list
+        active_scns = get_active_scns_list()
+        if scn not in active_scns:
+            active_scns.append(scn)
+            
+        if not config.has_section("camera_scn"):
+            config.add_section("camera_scn")
+        config.set("camera_scn", "scns", ",".join(active_scns))
+
         save_config(config)
 
     return redirect(url_for("camera_management"))
+
+@app.route('/toggle_process', methods=['POST'])
+def toggle_process():
+    data = request.get_json() or {}
+    scn = data.get('scn', '').strip()
+    action = data.get('action', '').strip()  # 'start' or 'stop'
+
+    if not scn:
+        return jsonify({'success': False, 'message': 'Invalid SCN'}), 400
+
+    config = load_config()
+    active_scns = get_active_scns_list()
+
+    if action == 'start':
+        if scn not in active_scns:
+            active_scns.append(scn)
+    elif action == 'stop' and scn in active_scns:
+        active_scns.remove(scn)
+
+    # Save updated scns list back to config.ini
+    if not config.has_section("camera_scn"):
+        config.add_section("camera_scn")
+        
+    camera_scn_str = ",".join(active_scns)
+    config.set("camera_scn", "scns", camera_scn_str)
+    save_config(config)
+
+    print(f"Updated active camera_scn list in config.ini: {camera_scn_str}")
+    return jsonify({'success': True, 'camera_scn': camera_scn_str})
+
 
 @app.route("/edit_camera", methods=["POST"])
 def edit_camera():
@@ -352,7 +372,6 @@ def edit_camera():
 
     config = load_config()
     if config.has_section(old_scn):
-        # Preserve non-GUI items (like existing zone dimensions)
         existing_items = dict(config.items(old_scn))
         if old_scn != scn:
             config.remove_section(old_scn)
@@ -363,27 +382,42 @@ def edit_camera():
         for k, v in existing_items.items():
             config.set(scn, k, v)
 
-        # Update GUI fields with exact target keys in config.ini
         config.set(scn, "stream", stream_link)
         config.set(scn, "third_party_ip", third_party_ip)
         config.set(scn, "third_party_port", third_party_port)
 
-        sync_junctions_key(config)
+        # Sync active SCN list if camera name was changed
+        active_scns = get_active_scns_list()
+        if old_scn in active_scns:
+            idx = active_scns.index(old_scn)
+            active_scns[idx] = scn
+            config.set("camera_scn", "scns", ",".join(active_scns))
+
         save_config(config)
 
     return redirect(url_for("camera_management"))
+
 
 @app.route("/delete", methods=["POST"])
 def delete_camera():
     data = request.get_json() or {}
     scn = data.get("scn")
     config = load_config()
+
     if scn and config.has_section(scn):
         config.remove_section(scn)
-        sync_junctions_key(config)
+
+        # Remove deleted camera from camera_scn list
+        active_scns = get_active_scns_list()
+        if scn in active_scns:
+            active_scns.remove(scn)
+            config.set("camera_scn", "scns", ",".join(active_scns))
+
         save_config(config)
         return jsonify({"status": "success"}), 200
+
     return jsonify({"status": "error"}), 400
+
 
 @app.route("/camera-setup/<scn>")
 def camera_setup(scn):
@@ -396,7 +430,6 @@ def camera_setup(scn):
         k: v for k, v in config.items(scn) if k.startswith("zone_dimensions_")
     }
 
-    # Fetch dynamic frame dimensions from [frame_size] section
     frame_width = config.getint("frame_size", "width", fallback=640)
     frame_height = config.getint("frame_size", "height", fallback=480)
 
@@ -409,13 +442,13 @@ def camera_setup(scn):
         frame_height=frame_height,
     )
 
+
 @app.route("/video_feed/<scn>")
 def direct_video_feed(scn):
     config = load_config()
     if config.has_section(scn):
         stream_url = config.get(scn, "stream", fallback="")
         if stream_url:
-            # Read width and height from [frame_size]
             frame_width = config.getint("frame_size", "width", fallback=640)
             frame_height = config.getint("frame_size", "height", fallback=480)
 
@@ -427,6 +460,7 @@ def direct_video_feed(scn):
             )
     return "Stream unavailable", 404
 
+
 @app.route("/save_zones", methods=["POST"])
 def save_zones():
     data = request.get_json() or {}
@@ -436,27 +470,33 @@ def save_zones():
     config = load_config()
     
     if config.has_section(scn):
-        # 1. Remove old zone dimensions under this camera section
         for key in list(config[scn].keys()):
             if key.startswith("zone_dimensions_"):
                 config.remove_option(scn, key)
 
-        # 2. Add new zone dimension parameters
         for zone_key, coords in zones.items():
             config.set(scn, zone_key, coords)
 
-        # 3. Save config file without overwriting other system sections (like data_cleanup)
-        with open(CONFIG_FILE, "w") as configfile:
-            config.write(configfile)
-
+        save_config(config)
         return jsonify({"status": "success"}), 200
 
     return jsonify({"status": "error"}), 400
+
+@app.route('/restart_service', methods=['POST'])
+def restart_service():
+    try:
+        # Executes sudo systemctl restart iphalakam.service
+        subprocess.Popen(['sudo', 'systemctl', 'restart', 'iphalakam.service'])
+        return jsonify({'success': True, 'message': 'Restart triggered successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 
 @app.route("/view1")
 def live_grid():
     scns_only = [stream["scn"] for stream in get_streams_list()]
     return render_template("live.html", stream_id="ALL", streams=scns_only)
+
 
 @app.route("/view1/<stream_id>")
 def video_feed(stream_id):
@@ -531,6 +571,7 @@ def video_feed(stream_id):
     </body>
     </html>
     """
+
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)

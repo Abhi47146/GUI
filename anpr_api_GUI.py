@@ -1,15 +1,16 @@
 import asyncio
-from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
 import os
 import sqlite3
 import time
-from typing import Optional
 from configparser import ConfigParser
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
+from typing import Optional
+
+import uvicorn
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import uvicorn
 
 conf = ConfigParser()
 conf.read('config.ini')
@@ -65,7 +66,7 @@ def init_db():
 def delete_old_data():
     conn = get_db()
     # Retain data for 2 days
-    cutoff = (datetime.now() - timedelta(days=day)).strftime("%Y-%m-%d %H:%M:%S")
+    cutoff = (datetime.now() - timedelta(days=day)).strftime("%Y-%m-%d %H:%M:%S")  # noqa: DTZ005
 
     rows = conn.execute(
         """
@@ -167,7 +168,7 @@ async def vehicle_entry(
 ):
     total_start = time.perf_counter()
 
-    now = datetime.now()
+    now = datetime.now()  # noqa: DTZ005
     year = now.strftime("%Y")
     month = now.strftime("%m")
     day = now.strftime("%d")
