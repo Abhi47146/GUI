@@ -1,0 +1,24 @@
+services:
+  gui:
+    build: .
+    command: python app.py
+    init: true
+    ipc: host
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - ./config.ini:/app/config.ini
+      - ./users.db:/app/users.db
+
+  api:
+    build: .
+    command: python anpr_api_GUI.py
+    init: true
+    ports:
+      - "8070:8070"
+    restart: unless-stopped
+    volumes:
+      - ./config.ini:/app/config.ini:ro
+      - ./vehicle_events.db:/app/vehicle_events.db
+      - ./data/images:/var/i-phalakam/data/images

@@ -1,0 +1,10 @@
+Flask
+Flask-SocketIO
+fastapi
+numpy
+opencv-python-headless
+passlib[bcrypt]
+bcrypt==4.0.1
+python-multipart
+simple-websocket
+uvicorn[standard]

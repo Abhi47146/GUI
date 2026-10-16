@@ -184,8 +184,7 @@ def init_db():
         conn.commit()
 
 
-if not os.path.exists(DATABASE):
-    init_db()
+init_db()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -574,4 +573,4 @@ def video_feed(stream_id):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=8000)
+    socketio.run(app, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
