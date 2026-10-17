@@ -1,4 +1,5 @@
 import warnings
+import subprocess
 
 # Suppress DeprecationWarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -7,7 +8,12 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 import socket
 import json
 import configparser  # Built-in, no need to check
+from flask_sock import Sock
 
+from flask import Flask, render_template, request, redirect, url_for, session, abort
+from flask_bcrypt import Bcrypt
+import sqlite3
+import os
 
 # Safe import function (returns module if available, else None)
 def safe_import(module_name):
@@ -29,8 +35,31 @@ if flask:
 else:
     print("Flask is not installed. The app cannot run.")
 
+
 # if werkzeug:
 #     from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, session
+
+#app = Flask(__name__)          # ✅ FIRST create app
+app.secret_key = "your_secret_key"   # ✅ THEN set secret key
+bcrypt = Bcrypt(app)
+DATABASE = "users.db"
+
+def init_db():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+if not os.path.exists(DATABASE):
+    init_db()
 
 if configparser:
     from configparser import ConfigParser
@@ -58,6 +87,7 @@ stream = []
 ja = []
 armsp = ''
 c=0
+
 for arm in arms:
     st = parser.get(arm,'STREAM')
     stream.append(st)
@@ -146,6 +176,13 @@ def config_read():
 def config_write(parser):
     with open('configfile.ini', 'w') as configfile:
         parser.write(configfile)
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 """
 Below functions are used when only the camera scn is changed
@@ -513,10 +550,195 @@ def video_feed_5():
         return redirect(request.url)
 
 
-@app.route('/')
-def index():
-    """Home page."""
+# @app.route('/')
+# def index():
+#     """Home page."""
+#     return render_template('index.html')
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    try:
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, hashed_password))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('login'))
+    except:
+        return "User already exists"
+
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT password FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and bcrypt.check_password_hash(user[0], password):
+            session['logged_in'] = True
+            session['email'] = email
+            return redirect(url_for('home'))
+        else:
+            return render_template('index_sign.html', error="Invalid Credentials")
+
+    return render_template('index_sign.html')
+
+
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        if request.form.get('add_cam') is None:
+            scn = request.form.get('scn')
+            stream = request.form.get('stream')
+            num = int(request.form.get('row')) - 1
+            port = request.form.get('port')
+            changeconfig(scn, stream, num, port)
+        else:
+            scn = request.form.get('scn')
+            stream = request.form.get('stream')
+            port = request.form.get('port')
+            addcamera(scn, stream, port)
+
     return render_template('index.html')
+
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     return redirect(url_for('login'))
+
+
+
+# @app.route('/live_tracking')
+# def live_track1():
+#     """Home page."""
+#     if 'logged_in' not in session:
+#         return redirect(url_for('login'))
+
+#     result = subprocess.run(
+#         ["pgrep", "-f", "live_tracking.py"],
+#         stdout=subprocess.PIPE
+#     )
+
+#     if result.returncode != 0:
+#         abort(500)
+#     return render_template('live_tracking.html')
+
+import sys
+
+live_process = None
+model_test_process = None
+
+@app.route('/start_tracking')
+def start_tracking():
+    global live_process
+
+    if live_process is None or live_process.poll() is not None:
+        live_process = subprocess.Popen([sys.executable, "live_tracking.py"])
+
+    return "Tracking Started"
+
+@app.route('/start_testing')
+def start_testing():
+    global model_test_process
+
+    if model_test_process is None or model_test_process.poll() is not None:
+        model_test_process = subprocess.Popen([sys.executable, "model_testing.py"])
+
+    return "Testing Started"
+
+@app.route('/live_tracking')
+def live_track1():
+    global live_process
+
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+
+    # Start process if not running
+    if live_process is None or live_process.poll() is not None:
+        live_process = subprocess.Popen([sys.executable, "live_tracking.py"])
+
+    return render_template('live_tracking.html')
+
+@app.route('/stop_tracking', methods=['POST'])
+def stop_tracking():
+    global live_process
+
+    if live_process and live_process.poll() is None:
+        live_process.terminate()
+        live_process = None
+        return {"status": "stopped"}
+
+    return {"status": "not_running"}
+
+@app.route('/model_testing')
+def model_test():
+    global model_test_process
+
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+    
+    if model_test_process is None or model_test_process.poll() is not None:
+        model_test_process = subprocess.Popen([sys.executable, "model_testing.py"])
+
+    return render_template('model_testing.html')
+
+@app.route('/stop_testing', methods=['POST'])
+def stop_testing():
+    global model_test_process
+
+    if model_test_process and model_test_process.poll() is None:
+        model_test_process.terminate()
+        model_test_process = None
+        return {"status": "stopped"}
+
+    return {"status": "not_running"}
+
+@app.route('/logout')
+def logout():
+    global live_process
+    global model_test_process
+
+    if live_process and live_process.poll() is None:
+        live_process.terminate()
+        live_process = None
+    
+    if model_test_process and model_test_process.poll() is None:
+        model_test_process.terminate()
+        model_test_process = None
+
+    session.clear()
+    return redirect(url_for('login'))
+
+
+# @app.route('/model_testing')
+# def model_test():
+#     """Home page."""
+#     if 'logged_in' not in session:
+#         return redirect(url_for('login'))
+#     result = subprocess.run(
+#         ["pgrep", "-f", "model_testing.py"],
+#         stdout=subprocess.PIPE
+#     )
+
+#     if result.returncode != 0:
+#         abort(500)
+#     return render_template('model_testing.html')
 
  #below function is to fetch the dimensions that arr stored in config  
 
@@ -596,27 +818,29 @@ def update_config():
 
 
 
-@app.route('/test')
-def test():
-    return render_template('home.html')
+# @app.route('/test')
+# def test():
+#     return render_template('home.html')
 
-@app.route('/',methods = ['POST'])
-def test1():
-    if request.method == 'POST':
-        if request.form.get('add_cam') is None:
-            scn = request.form.get('scn')
-            stream = request.form.get('stream')
-            num = int(request.form.get('row')) - 1
-            port = request.form.get('port')
-            changeconfig(scn,stream,num,port)
-        else:
-            scn = request.form.get('scn')
-            stream = request.form.get('stream')
-            port = request.form.get('port')
-            addcamera(scn,stream,port)
-        return render_template('index.html')
-    else:
-        return render_template('index.html')
+# @app.route('/',methods = ['POST'])
+# def test1():
+#     if request.method == 'POST':
+#         if request.form.get('add_cam') is None:
+#             scn = request.form.get('scn')
+#             stream = request.form.get('stream')
+#             num = int(request.form.get('row')) - 1
+#             port = request.form.get('port')
+#             changeconfig(scn,stream,num,port)
+#         else:
+#             scn = request.form.get('scn')
+#             stream = request.form.get('stream')
+#             port = request.form.get('port')
+#             addcamera(scn,stream,port)
+#         return render_template('index.html')
+#     else:
+#         return render_template('index.html')
+
+
 
 
 
@@ -671,6 +895,66 @@ def watch_video():
     </html>
     """
     return render_template_string(html)
+
+sock = Sock(app)
+
+web_clients = []
+@sock.route('/ws/live/upload')
+def upload(ws):
+    print("Vehicle (Sender) connected")
+    while True:
+        try:
+            data = ws.receive()
+            for client in web_clients[:]:
+                try:
+                    client.send(data)
+                except:
+                    web_clients.remove(client)
+        except Exception as e:
+            print(f"Vehicle disconnected: {e}")
+            break
+
+@sock.route('/ws/live/view')
+def view(ws):
+    print("Browser connected")
+    web_clients.append(ws)
+    while True:
+        try:
+            ws.receive()
+        except:
+            if ws in web_clients:
+                web_clients.remove(ws)
+            break
+
+test_web_clients = []
+
+@sock.route('/ws/test/upload')
+def test_upload(ws):
+    print("Model Testing sender connected")
+    while True:
+        try:
+            data = ws.receive()
+            for client in test_web_clients[:]:
+                try:
+                    client.send(data)
+                except:
+                    test_web_clients.remove(client)
+        except Exception as e:
+            print(f"Test sender disconnected: {e}")
+            break
+
+
+@sock.route('/ws/test/view')
+def test_view(ws):
+    print("Model Testing browser connected")
+    test_web_clients.append(ws)
+    while True:
+        try:
+            ws.receive()
+        except:
+            if ws in test_web_clients:
+                test_web_clients.remove(ws)
+            break
 
 
 if __name__ == '__main__':

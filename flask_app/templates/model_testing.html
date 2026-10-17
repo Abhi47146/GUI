@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Model Testing Feed</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1a1a1a; color: white; }
+        #stream-container { margin-top: 20px; }
+        canvas { border: 2px solid #4CAF50; border-radius: 8px; max-width: 90%; }
+    </style>
+</head>
+
+<div class="top-bar">
+    <button class="stop-btn" onclick="stopTracking()">Stop Model Testing</button>
+</div>
+
+<div id="status-message" class="status-message" style="display:none;">
+    ⚠️ Server Not Reachable
+</div>
+
+<style>
+.top-bar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+.stop-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.stop-btn:hover {
+    background-color: darkred;
+}
+
+.status-message {
+    margin-top: 100px;
+    text-align: center;
+    font-size: 22px;
+    color: red;
+    font-weight: bold;
+}
+</style>
+
+<script>
+function stopTracking() {
+    fetch("/stop_testing", {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "stopped") {
+
+            // Hide main content (if you have video container)
+            document.body.innerHTML = `
+                <div style="display:flex;justify-content:center;
+                            align-items:center;height:100vh;
+                            font-size:28px;color:red;font-weight:bold;">
+                    ⚠️ Server Not Reachable
+                </div>
+            `;
+
+        }
+    });
+}
+</script>
+<body>
+    <h1>Live Model Testing</h1>
+    <div id="stream-container">
+        <canvas id="videoCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('videoCanvas');
+        const ctx = canvas.getContext('2d');
+        const ws = new WebSocket('ws://' + window.location.host + '/ws/test/view');
+
+        ws.onmessage = (event) => {
+            const blob = new Blob([event.data], { type: 'image/jpeg' });
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+
+            img.onload = () => {
+                canvas.width = 640;
+                canvas.height = 640;
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url); // Clean up memory
+            };
+            img.src = url;
+        };
+
+        ws.onopen = () => console.log("Connected to Stream Server");
+        ws.onclose = () => console.log("Disconnected from Stream Server");
+    </script>
+</body>
+</html>
